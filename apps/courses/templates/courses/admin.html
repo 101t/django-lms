@@ -1,0 +1,19 @@
+{% extends "courses/course_base.html" %}
+{% load breadcrumbs %}
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ course }}" courses:overview course.id %}
+{% breadcrumb "Admin" %}
+{% endblock breadcrumbs %}
+
+{% block course_content %}
+<div id="course">
+  <span class="course-sub-info">{{ course.number }} - {{ course.section }}: {{ course.semester.name }} {{ course.semester.year }}</span>
+  <div id="course-admin-tools">
+    <form name="course-options" method="post" action="{% url courses:admin course.id %}">
+    {{ form }}
+    {% csrf_token %}
+   <input class="button" name="save" type="submit" value="save">
+    </form>
+  </div>
+</div>
+{% endblock course_content %}

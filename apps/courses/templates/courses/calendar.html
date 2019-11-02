@@ -1,0 +1,22 @@
+{% extends "html_base.html" %}
+{% load breadcrumbs %}
+
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ semester }}" courses:by_semester semester.id %}
+{% breadcrumb "Calendar" %}
+{% endblock breadcrumbs %}
+
+{% block title %}{{ course.title }}{% endblock title %}
+
+{% block aside %}
+{% endblock %}
+{% block content_attributes %}class="span12"{% endblock %}
+
+{% block content %}
+<h1>Calendar</h1>
+{% for calendar in calendars %}
+  <div class="calendar">
+    {{ calendar|safe }}  
+  </div>
+{% endfor %}
+{% endblock content %}

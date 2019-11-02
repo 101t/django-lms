@@ -1,0 +1,52 @@
+{% extends "html_base.html" %}
+{% load i18n %}
+{% load compress %}
+
+{% block css %}
+{% compress css %}
+<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/login.css">
+{% endcompress %}
+{% endblock css %}
+
+{% block bodyclass %}login{% endblock bodyclass %}
+
+{% block content %}
+<div id="login">
+  <div id="container">
+    <!-- Header --> 
+    <div id="login-header"> 
+      <div id="branding"> 
+        <h1 id="site-name">Login</h1> 
+      </div> 
+    </div> 
+    <!-- END Header --> 
+    <!-- Content --> 
+    <div id="form"> 
+      {% if form.errors %}
+      <div class="error">Your username and password didn't match. Please try again.</div>
+      {% endif %}
+      
+      <div>
+        <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
+	      <div class="form-row">
+	        {% if not form.this_is_the_login_form.errors %}{{ form.username.errors }}{% endif %}
+	        <label for="id_username" class="required">{% trans 'Username:' %}</label> {{ form.username }}
+	      </div>
+	      <div class="form-row">
+	        {% if not form.this_is_the_login_form.errors %}{{ form.password.errors }}{% endif %}
+	        <label for="id_password" class="required">{% trans 'Password:' %}</label> {{ form.password }}
+	        <input type="hidden" name="this_is_the_login_form" value="1" />
+	        <input type="hidden" name="next" value="{{ next }}" />
+	      </div>
+	      <div class="submit-row">
+	        <input type="submit" value="{% trans 'Log in' %}" class="btn btn-primary"/>
+	      </div>
+        </form>
+        <script type="text/javascript">
+	      document.getElementById('id_username').focus()
+        </script>
+      </div>
+    </div>
+  </div>
+</div>
+{% endblock %}

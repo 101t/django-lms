@@ -1,0 +1,189 @@
+{% load compress %}
+<!doctype html>
+<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
+<!--[if lt IE 7 ]> <html class="no-js ie6" lang="en"> <![endif]-->
+<!--[if IE 7 ]>    <html class="no-js ie7" lang="en"> <![endif]-->
+<!--[if IE 8 ]>    <html class="no-js ie8" lang="en"> <![endif]-->
+<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+  <head>
+    <meta charset="utf-8">
+
+    <!-- Always force latest IE rendering engine (even in intranet) & Chrome Frame
+         Remove this if you use the .htaccess -->
+    <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
+
+    <title>{% block title %}{{ title|default:"Django-lms: Learning Management System" }}{% endblock title %}</title>
+    <meta name="description" content="">
+    <meta name="author" content="">
+
+    <!-- Mobile viewport optimized: j.mp/bplateviewport -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+
+    <!-- Place favicon.ico & apple-touch-icon.png in the root of your domain and delete these references -->
+    <link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
+    <link rel="apple-touch-icon" href="{{ STATIC_URL }}images/apple-touch-icon.png">
+
+
+    <!-- All JavaScript at the bottom, except for Modernizr which enables HTML5 elements & feature detects -->
+    <script src="{{ STATIC_URL }}js/libs/modernizr-1.7.min.js"></script>
+
+    {% compress css %}
+    <!-- CSS: implied media="all" -->
+    <!-- Framework CSS -->
+    <link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/style.css" charset="utf-8" media="screen, projection">
+    {% endcompress %}
+
+
+
+
+    <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/jdMenu.css" type="text/css" />
+    <link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.7/themes/smoothness/jquery-ui.css">
+
+    {% block extra_head %}
+    {% endblock extra_head %}
+
+    {% block css %}
+    {% endblock css %}
+
+
+  </head>
+
+  <body class="{% block bodyclass %}{% endblock bodyclass %}">
+    <header>
+      <div class="navbar navbar-static-top navbar-inverse">
+        <div class="navbar-inner">
+          <div class="container">
+            <a class="brand" href="{% url springboard %}"><img id="logo" src="{{ STATIC_URL }}images/logo.png"></a>
+            <div class="nav-collapse collapse" id="main-menu">
+              <div class="auth pull-right">
+                {% if user.is_authenticated %}
+                  <img class="avatar" src="{{ STATIC_URL }}images/profile-empty-head.gif">
+                  <span class="name"><a href="{% url profiles:detail user %}">{{ user.first_name }} {{ user.last_name }}</a></span><br/>
+                  <span class="links">
+                    {% if user.is_staff %}<a href="{% url admin:index %}">Admin</a>{% endif %}
+                    <a href="{% url logout %}">Log Out</a>
+                  </span>
+	            {% else %}
+                  <span class="links">
+                    <a href="{% url login %}">Log In</a>
+                  </span>
+                {% endif %}
+              </div>
+            </div>
+	      </div>
+	    </div>
+      </div>    
+    </header>
+    <div class="container" id="top-container">    
+      <div class="row">
+        <div id="messages" class="span12">
+          {% if messages %}
+          {% for message in messages %}
+          {% include "django-message.html" %}
+          {% endfor %}
+          {% endif %}
+        </div>
+      </div>
+      <div class="row">
+        <div id="breadcrumbs" class="span12">
+          <ul class="breadcrumb">
+            <li><a href="/">Home</a></li>{% block breadcrumbs %}{% endblock breadcrumbs %}
+          </ul>
+        </div>
+      </div>
+    </div>
+    <div class="container" id="main">
+      <div class="row">
+        {% block aside %}
+        <div class="span3">
+          <aside>
+            <nav>
+              <ul class="nav">
+                {% block menu %}
+                {% endblock menu %}                
+              </ul>
+            </nav>
+          </aside>
+        </div>        
+      {% endblock aside %}
+        <div {% block content_attributes %}class="span9" id="content-wrapper"{% endblock %}>
+          <div id="content">
+	      {% block content %}
+	      {% endblock content %}
+          </div>          
+	    </div>
+      </div>
+    </div>
+
+<!-- <footer> -->
+
+<!-- </footer> -->
+
+<!-- JavaScript at the bottom for fast page loading -->
+
+<!-- Grab Google CDNs jQuery, with a protocol relative URL; fall back to local if necessary -->
+<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
+<script>window.jQuery || document.write("<script src='{{ STATIC_URL }}/js/libs/jquery-1.7.1.min.js'>\x3C/script>")</script>
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
+  <script src="{{ STATIC_URL }}/js/libs/jquery.jdMenu.packed.js"></script>
+  {% if TYPEKIT_URL %}
+  <script type="text/javascript" src="{{ TYPEKIT_URL }}"></script>
+  <script type="text/javascript">try{Typekit.load();}catch(e){}</script>
+  {% endif %}
+  <!--[if lt IE 7 ]>
+      <script src="js/libs/dd_belatedpng.js"></script>
+      <script>DD_belatedPNG.fix("img, .png_bg"); // Fix any <img> or .png_bg bg-images. Also, please read goo.gl/mZiyb </script>
+      <![endif]-->
+
+  <script type="text/javascript" src="{{ STATIC_URL }}js/libs/bootstrap/bootstrap-alert-fixed.js"></script>
+
+  {% block extra_libraries %}
+  {% endblock extra_libraries %}
+  
+  <!-- mathiasbynens.be/notes/async-analytics-snippet Change UA-XXXXX-X to be your sites ID -->
+  <script>
+    var _gaq=[["_setAccount","UA-XXXXX-X"],["_trackPageview"]];
+    (function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
+    g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
+    s.parentNode.insertBefore(g,s)}(document,"script"));
+  </script>
+  <script>
+    $('html').ajaxSend(function(event, xhr, settings) {
+    function getCookie(name) {
+    var cookieValue = null;
+    if (document.cookie && document.cookie != '') {
+    var cookies = document.cookie.split(';');
+    for (var i = 0; i < cookies.length; i++) {
+                        var cookie = jQuery.trim(cookies[i]);
+                        // Does this cookie string begin with the name we want?
+                        if (cookie.substring(0, name.length + 1) == (name + '=')) {
+                        cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
+                        break;
+                        }
+                        }
+                        }
+                        return cookieValue;
+                        }
+                        if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
+                        // Only send the token to relative URLs i.e. locally.
+                        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
+                        }
+                        });
+
+                        $(document).ready(function(){
+                        $('ul.jd_menu').jdMenu();
+                        $('.alert').alert();
+                        $('.alert').bind('close', function(){
+                        $.post('{% url alerts:acknowledge %}', {pk: $(this).data('id')});
+                        });
+                        });
+                        $(document).bind('click', function() {
+                        $('ul.jd_menu ul:visible').jdMenuHide();
+                        });
+
+                        {% block js %}
+                        {% endblock js %}
+                        </script>
+
+  </body>
+</html>

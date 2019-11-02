@@ -1,0 +1,21 @@
+{% extends "html_base.html" %}
+{% load breadcrumbs %}
+{% block breadcrumbs %}
+{% breadcrumb "Semesters" %}
+{% endblock breadcrumbs %}
+
+{% block title %}Semesters{% endblock title %}
+
+{% block aside %}
+{% endblock %}
+{% block content_attributes %}class="span12"{% endblock %}
+
+{% block content %}
+
+<div id="semester-list">
+  <h1>Semesters</h1>
+  {% for semester in semesters %}
+    <a href="{% url courses:by_semester pk=semester.id %}">{{ semester }}</a><br>
+  {% endfor %}  
+</div>
+{% endblock content %}

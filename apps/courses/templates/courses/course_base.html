@@ -1,0 +1,10 @@
+{% extends "html_base.html" %}
+{% block title %}{{ course.title }}{% endblock title %}
+{% block menu %}
+ {% include "courses/menu.html" %}
+{% endblock menu %}
+{% block content %}
+<h1 class="course-title">{{ course.title }}</h1>
+ {% block course_content %}
+ {% endblock course_content %}
+{% endblock content %}

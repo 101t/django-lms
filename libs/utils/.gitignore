@@ -1,0 +1,9 @@
+syntax: glob
+*.pyc
+*.orig
+*.swp
+*.swo
+*.pyo
+*.cache
+*.db
+*~

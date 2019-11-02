@@ -1,0 +1,23 @@
+{% extends "html_base.html" %}
+{% load breadcrumbs %}
+
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ semester }}" courses:by_semester semester.id %}
+{% breadcrumb_url "Calendar" courses:calendar %}
+{% breadcrumb "By Day" %}
+{% endblock breadcrumbs %}
+
+{% block title %}{{ course.title }}{% endblock title %}
+
+{% block aside %}
+{% endblock %}
+{% block content_attributes %}class="span12"{% endblock %}
+
+{% block content %}
+<h1>Events for {{ month }} - {{ day }} - {{ year }}</h1>
+<div class="calendar">
+  {% for event in events %}
+    {{ event.1.start }} - {{ event.1.end }}: <a href="{% url courses:overview event.1.course.pk %}">{{ event.1.course.full_title }}</a> {{ event.1.title }}
+  {% endfor %}  
+</div>
+{% endblock content %}

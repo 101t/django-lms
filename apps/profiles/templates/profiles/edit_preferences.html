@@ -1,0 +1,15 @@
+{% extends "html_base.html" %}
+{% block extra_head %}
+<script type="text/javascript" src="{{ STATIC_URL }}tiny_mce/tiny_mce.js"></script>
+{% endblock extra_head %}
+
+{% block title %}Edit your preferences{% endblock title %}
+{% block content %}
+<h1>Edit your profile</h1>
+<form action="{% url profiles:preference_edit username=request.user.username %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<table>
+{{ form }}
+</table>
+<input type="submit" value="save">
+</form>
+{% endblock content %}

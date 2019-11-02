@@ -1,0 +1,55 @@
+{% extends "courses/course_base.html" %}
+{% load courses %}
+{% load breadcrumbs %}
+
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ course.semester }}" courses:by_semester course.semester.id %}
+{% breadcrumb "Overview" %}
+{% endblock breadcrumbs %}
+
+{% block js %}
+$(document).ready(function(){
+    $('#membership-button').click(function(e) {
+	e.preventDefault();
+	$(this).html('working...');
+	$.ajax({
+	    url: "{% url courses:toggle-membership course.id %}",
+	    context: document.body,
+	    type: "POST",
+	    success: function(data){
+		if (data.status == 'added'){
+		    $('#membership-button').html("Remove membership");
+            $("#messages").append($("<div class='alert alert-info' data-alert><a class='close' data-dismiss='alert' href='#'>&times;</a>You have been added to the course</div>"));
+		} else if (data.status == 'removed'){
+		    $('#membership-button').html("Become member");
+            $("#messages").append($("<div class='alert alert-info' data-alert><a class='close' data-dismiss='alert' href='#'>&times;</a>You have been removed from the course</div>"));
+		}
+
+        $('#messages div').alert();
+	    },
+        error: function(data){
+            console.log(data);
+        }
+	});
+    });
+});
+{% endblock js %}
+
+{% block course_content %}
+<div id="course">
+  <span class="course-sub-info">{{ course.number }} - {{ course.section }}: {{ course.semester.name }} {{ course.semester.year }} | {{ course.credits }} credit hours</span>
+  {% ifpossiblemember %}
+  {% if course.semester.active %}
+    {% if not request.user in course.members %}
+      <div class="right"><a id="membership-button" href="#" class="btn btn-primary">Become member</a></div>
+    {% else %}
+      <div class="right"><a id="membership-button" href="#" class="btn btn-primary">Remove membership</a></div>
+    {% endif %}
+      {% endif %}
+{% endifpossiblemember %}
+  
+  <div id="description">
+   {{ course.description|safe }}
+  </div>
+</div>
+{% endblock course_content %}

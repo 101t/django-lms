@@ -1,0 +1,54 @@
+{% extends "courses/resource_base.html" %}
+{% load courses %}
+{% load util %}
+{% load breadcrumbs %}
+
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ course }}" courses:overview course.id %}
+{% breadcrumb "Resources" %}
+{% endblock breadcrumbs %}
+
+{% block page_title %}<span class="san-serif">{{ resource.title }}</span>{% endblock page_title %}
+{% block resource_content %}
+<div id="resource">
+  <div class="resource-details">
+   <div class="resource-description">
+      {{ resource.description|safe }}
+    </div>
+    {% if resource.link %}
+    <div class="resource-link">
+      <a href="{{ resource.link }}">{{ resource.link }}</a>
+    </div>
+    {% endif %}
+    {% if resource.file %}
+    <div class="resource-file">
+      <a href="{{ resource.file }}">{{ resource.file.name|basename }}</a>
+    </div>
+    {% endif %}
+  </div>
+</div>
+
+{% endblock resource_content %}
+
+{% block tools %}
+<a id="delete" href="#">Delete resource</a>
+<a href="{% url courses:edit_resource resource.id %}">Edit resource</a>
+{% endblock tools %}
+
+{% block js %}
+
+$(document).ready(function(){
+
+    $('#delete').click(function(){
+	if (confirm('Delete resource?')){
+	    var delete_return = $.post('{% url courses:delete_resource %}', 
+		   {id: {{ resource.id }}},
+		   function(data){
+		       window.location = data
+		   });
+	}
+    });
+
+});
+
+{% endblock js %}

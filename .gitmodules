@@ -1,0 +1,6 @@
+[submodule "libs/jQuery-Collapse"]
+    path = libs/jQuery-Collapse
+    url = https://github.com/danielstocks/jQuery-Collapse
+[submodule "libs/utils"]
+	path = libs/utils
+	url = git://github.com/emperorcezar/Django-utils.git

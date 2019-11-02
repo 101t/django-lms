@@ -1,0 +1,24 @@
+{% extends "courses/course_base.html" %}
+
+{% load courses %}
+
+{% block course_content %}
+  {% ifcoursefaculty %}
+  <div class="navbar tools">
+    <div class="navbar-inner">
+      <ul class="nav">
+	    {% block tools %}
+          <li><a href="{% url courses:resource_create course.id %}">New resource</a></li>
+        {% endblock tools %}
+      </ul>        
+    </div>
+  </div>
+  {% endifcoursefaculty %}
+
+<h2>{% block page_title%}Resources{% endblock page_title %}</h2>
+{% block resource_content %}
+{% endblock resource_content %}
+</div>
+{% endblock course_content %}
+
+

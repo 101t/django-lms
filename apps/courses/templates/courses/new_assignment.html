@@ -1,0 +1,31 @@
+{% extends "courses/course_base.html" %}
+{% block extra_head %}
+<script type="text/javascript" src="{{ STATIC_URL }}tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="{% url tinymce-js "NAME" %}"></script>
+{% endblock extra_head %}
+
+{% block course_content %}
+<div id="course">
+  <span class="course-sub-info">{{ course.number }} - {{ course.section }}: {{ course.semester.name }} {{ course.semester.year }}</span>
+ <div id="new-assignment">
+    <form name="new-assignment-form" method="post" action=".">
+    <table>
+    {{ form }}
+    </table>
+    {% csrf_token %}
+   <input class="button" name="save" type="submit" value="save">
+    </form>
+  </div>
+</div>
+{% endblock course_content %}
+{% block extra_libraries %}
+  <script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/jquery-ui.min.js"></script>
+{% endblock extra_libraries %}
+
+{% block css %}
+<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.5/themes/cupertino/jquery-ui.css">
+{% endblock css %}
+
+{% block js %}
+$('#id_due_date').datepicker();
+{% endblock js %}

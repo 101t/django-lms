@@ -1,0 +1,22 @@
+{% extends "courses/assignment_base.html" %}
+{% load breadcrumbs %}
+{% block title %}Assignments for {{ course }}{% endblock title %}
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ course }}" courses:overview course.id %}
+{% breadcrumb "Assignments" %}
+{% endblock breadcrumbs %}
+
+{% block assignment_content %}
+<div id="assignment-list">
+    {% for assignment in assignments %}
+    <div class="assignment-overview {% cycle 'odd' 'even' %}">
+      <div class="assignment-title san-serif"><a href="{% url courses:assignment_overview assignment.id %}">{{ assignment.title }}</a></div>
+      <div class="assignment-due-date">{{ assignment.due_date }}</div>
+      <div class="assignment-description">
+	{{ assignment.description|safe|truncatewords_html:100 }}
+      </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock assignment_content %}
+

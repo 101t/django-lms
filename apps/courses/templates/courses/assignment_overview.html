@@ -1,0 +1,91 @@
+{% extends "courses/assignment_base.html" %}
+{% load courses %}
+{% load breadcrumbs %}
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ course }}" courses:overview course.id %}
+{% breadcrumb "Assignment Overview" %}
+{% endblock breadcrumbs %}
+
+{% block page_title %}<span class="san-serif">{{ assignment.title }}</span>{% endblock page_title %}
+{% block assignment_content %}
+<div id="assignment">
+  <div class="assignment-overview">
+   <div class="assignment-due-date">{{ assignment.due_date }}</div>
+    <div class="assignment-description">
+      {{ assignment.description|safe }}
+    </div>
+  </div>
+</div>
+
+{% if submissions %}
+  {% ifcoursefaculty %}
+  <h3>All submitted solutions</h3>
+  {% for submission in submissions %}
+    <div class="{% cycle 'odd' 'even' %}">
+      {% include "courses/submission.html" %}
+    </div>
+  {% endfor %}
+  {% else %}
+  <h3>Your submitted solutions</h3>
+  {% for submission in submissions %}
+  <div class="{% cycle 'even' '' %}">
+    <div class="right">
+      <a class="button delete" href="#" id="submission_{{ submission.id }}">Delete</a>
+    </div>
+    <div class="left">
+      {% include "courses/submission.html" %}
+    </div>
+  </div>
+  {% endfor %}
+  {% endifcoursefaculty %}
+{% endif %}
+{% endblock assignment_content %}
+
+{% block tools %}
+{% ifcoursefaculty %}<a href="{% url courses:edit_assignment assignment.id %}">Edit assignment</a>{% endifcoursefaculty %}
+{% ifcoursefaculty %}<a id="delete" href="#">Delete assignment</a>{% endifcoursefaculty %}{% ifcoursemember %}<a href="{% url courses:submit_assignment assignment.id %}">Submit solution</a>{% endifcoursemember %}
+{% ifcoursemember %}<a href="{% url courses:team_submit_assignment assignment.id %}">Submit solution for team</a>{% endifcoursemember %}
+{% endblock tools %}
+
+{% block js %}
+
+$(document).ready(function(){
+    {% for submission in submissions %}
+        $('#submission_{{ submission.id }}').data('submission', '{{ submission.id }}');
+    {% endfor %}
+
+    $('.submission .delete').hide();
+    $('.submission').hover(
+	function(){
+	    $('.delete', this).fadeIn(100);
+            $(this).css('background-color', '#d5edf8');
+	},
+	function(){
+	    $('.delete', this).fadeOut(100);
+            $(this).css('background-color', 'transparent');
+	}
+    );
+
+    $('.submission .delete').click(function(){
+	if (confirm('Delete submission?')){
+	    var delete_return = $.post('{% url courses:delete_submission %}', 
+		   {id: $(this).data('submission')},
+		   function(data){
+		       window.location = data
+		   });
+	}
+    });
+
+    $('#delete').click(function(){
+	if (confirm('Delete assignment?')){
+	    var delete_return = $.post('{% url courses:delete_assignment %}', 
+		   {id:{{ assignment.id }}},
+		   function(data){
+		       window.location = data
+		   });
+	}
+    });
+
+});
+
+{% endblock js %}

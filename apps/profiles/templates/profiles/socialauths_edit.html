@@ -1,0 +1,40 @@
+<div id="socialauth-connections">
+<h2>Connections</h2>
+<table>
+  <thead>
+    <tr>
+      <th>Type</th>
+      <th>ID</th>
+      <th> </th>
+    </tr>
+  </thead>
+  <tbody>
+    {% if social_auth.google %}
+    <tr>
+      <td>Google</td>
+      <td>{{ social_auth.google.uid }}</td>
+      <td class="action"><a href="{% url socialauth_disconnect backend='google' %}">Disconnect</a></td>
+    </tr>
+    {% else %}
+    <tr>
+      <td>Google</td>
+      <td>None</td>
+      <td class="action"><a href="{% url socialauth_associate_begin backend='google' %}">Connect</a></td>
+    </tr>
+    {% endif %}
+    {% if social_auth.facebook %}
+    <tr>
+      <td>Facebook</td>
+      <td>{{ social_auth.facebook.uid }}</td>
+      <td class="action"><a href="{% url socialauth_disconnect backend='facebook' %}">Disconnect</a></td>
+    </tr>
+    {% else %}
+    <tr>
+      <td>Facebook</td>
+      <td>None</td>
+      <td class="action"><a href="{% url socialauth_associate_begin backend='facebook' %}">Connect</a></td>
+    </tr>
+    {% endif %}
+  </tbody>
+</table>
+</div>

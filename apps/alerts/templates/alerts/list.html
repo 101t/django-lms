@@ -1,0 +1,35 @@
+{% extends "html_base.html" %}
+{% block title %}{{ semester }}{% endblock title %}
+{% block content %}
+<div id="alert-list">
+  {% for alert in alerts %}
+  <div class="intranet-alert">
+    <h3 class="alert-title">
+      {{ alert.title }}
+    </h3>
+    <div class="alert-details">
+      {{ alert.details|safe }}
+    </div>
+  </div>
+  {% endfor %}
+</div>
+{% endblock content %}
+
+{% block extra_libraries %}
+<script src="{{ STATIC_URL }}js/libs/jquery.collapse.js"></script>
+<script src="{{ STATIC_URL }}js/libs/jquery.cookie.js"></script>
+{% endblock extra_libraries %}
+
+{% block js %}
+$(document).ready(function(){
+    $('.intranet-alert').collapse({
+	head: "h3.alert-title",
+        show: function() {
+            this.animate({opacity: 'toggle', height: 'toggle'}, 200);
+        },
+        hide : function() {
+            this.animate({opacity: 'toggle', height: 'toggle'}, 200);
+        }
+    });
+});
+{% endblock js %}

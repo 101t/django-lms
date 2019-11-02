@@ -1,0 +1,45 @@
+{% extends "courses/course_base.html" %}
+{% load breadcrumbs %}
+
+{% block breadcrumbs %}
+{% breadcrumb_url "{{ course }}" courses:overview course.id %}
+{% breadcrumb "Submit Assignment" %}
+{% endblock breadcrumbs %}
+
+
+{% block extra_head %}
+<script type="text/javascript" src="{{ STATIC_URL }}tiny_mce/tiny_mce.js"></script>
+<script type="text/javascript" src="{% url tinymce-js "NAME" %}"></script>
+{% endblock extra_head %}
+
+{% block css %}
+<link rel="stylesheet" href="{{ STATIC_URL }}css/jquery.multiselect.css">
+{% endblock css %}
+
+{% block js %}
+$(document).ready(function(){
+   $('#id_users').multiselect();
+})
+{% endblock js %}
+
+{% block extra_libraries %}
+<script type="text/javascript" src="{{ STATIC_URL }}js/libs/jquery.multiselect.min.js"></script>
+{% endblock extra_libraries %}
+
+{% block course_content %}
+<div id="course">
+ <div id="submit-assignment">
+    <form name="submit-assignment-form" method="post" action="{% url courses:submit_assignment assignment.id %}">
+   <div class="notice">
+     You may provide a file or a link.
+     </div>
+    <table>
+    {{ form }}
+    </table>
+    {% csrf_token %}
+   <input class="button" name="save" type="submit" value="save">
+    </form>
+  </div>
+</div>
+{% endblock course_content %}
+

@@ -1,0 +1,7 @@
+{% load courses %}
+  <li class="{% course_menu_active 'courses:overview' %}"><a href="{% url courses:overview course.id %}">Overview</a></li> 
+  <li class="{% course_menu_active 'courses:resources' %}"><a href="{% url courses:resources course.id %}">Resources</a></li> 
+  <li class="{% course_menu_active 'courses:assignments' %}"><a href="{% url courses:assignments course.id %}">Assignments</a></li> 
+  <li class="{% course_menu_active 'courses:members' %}"><a href="{% url courses:members course.id %}">Members</a></li> 
+  {% ifcoursefaculty %}<li class="{% course_menu_active 'courses:admin' %}"><a href="{% url courses:admin course.id %}">Admin</a></li>{% endifcoursefaculty %} 
+

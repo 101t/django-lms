@@ -1,0 +1,45 @@
+{% extends "html_base.html" %}
+{% load util %}
+{% block title %}Profile for {{ profile.user }}{% endblock title %}
+
+{% block aside %}
+{% endblock %}
+{% block content_attributes %}class="span12"{% endblock %}
+
+{% block content %}
+
+<div class="row profile-detail">
+  <div class="span2 profile-image">
+  {% if profile.mugshot %}
+    <img src="{{ profile.mugshot.url }}" alt="profile image">
+  {% else %}
+    <img src="{{ STATIC_URL}}images/profile-empty-head.gif" alt="profile image">
+  {% endif %}
+ </div>
+  <div class="span10 profile-text">
+    <h1>Profile for {{ profile.user.get_full_name }}  {% if profile.user == request.user %}
+      <a href="{% url profiles:edit profile.user %}" class="btn btn-primary edit-button">Edit</a>
+  {% endif %}
+    </h1>
+    {% if profile.is_alum %}
+      Alumni<br>      
+    {% endif %}    
+    {% if profile.user.userdegree_set.all.count > 0 %}
+      {% for degree in profile.user.userdegree_set.all %}
+        {{ degree }}<br>
+      {% endfor %}
+    {% endif %}    
+    {% if profile.data.biography %}
+    <h3>Biography</h3>
+    <p>{{ profile.data.biography|safe }}</p>
+    {% endif %}
+    {% if profile.resume %}
+    <h3>Resume</h3>
+    <p><a href="{{ profile.resume.url }}">{{ profile.resume.name|basename }}</a>
+    {% endif %}
+      {% if profile.user == request.user %}
+      {% include "profiles/socialauths.html" %}
+      {% endif %}
+  </div>
+</div>
+{% endblock content %}

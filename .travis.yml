@@ -1,0 +1,21 @@
+language: python
+python:
+  - "2.7"
+test:
+  adapter: postgresql
+  database: django_lms
+  username: postgres
+
+before_script:
+  - psql -c 'create database django_lms;' -U postgres
+
+# command to install dependencies
+install: "pip install -r requirements.txt --use-mirrors"
+
+# command to run tests
+script: "bash ./runtests.sh"
+
+notifications:
+  email:
+    on_success: change
+    on_failure: always

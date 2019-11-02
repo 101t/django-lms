@@ -1,0 +1,24 @@
+<div class="submission">
+  <div class="by"><em>Submitted by: 
+    {% for user in submission.users.all %}
+    {{ user.get_full_name }}{% if not forloop.last %}, {% endif %}
+    {% endfor %}
+      on {{ submission.submitted }}{% if submission.late %}<span class="late"> (late)</span>{% endif %}
+    </em>
+  </div>
+{% if submission.link %}
+Link: <a href="{{ submission }}" target = "_blank">{{ submission }}</a>
+{% else %}
+  {% if submission.file %}
+  {{ submission.file }}
+  {% endif %}
+{% endif %}
+{% if submission.notes %}
+<div>
+<strong>Notes</strong><br>
+{{ submission.notes }}
+</div>
+{% endif %}
+<div>
+</div>
+</div>
