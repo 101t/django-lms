@@ -20,7 +20,7 @@ factory-boy==2.9.2
 Faker==0.8.7
 gunicorn==19.7.1
 guppy==0.1.10
-httplib2==0.10.3
+httplib2==0.18.0
 ipaddress==1.0.18
 kombu==3.0.37
 mimeparse==0.1.3
