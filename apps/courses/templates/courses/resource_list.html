@@ -10,7 +10,7 @@
 <div id="resource-list">
     {% for resource in resources %}
     <div class="resource-overview">
-	<div class="resource-title san-serif"><a href="{% url courses:resource_details resource.id %}">{{ resource.title }}</a></div>
+	<div class="resource-title san-serif"><a href="{% url 'courses:resource_details' resource.id %}">{{ resource.title }}</a></div>
      <div class="resource-description">
 	{{ resource.description|safe|truncatewords_html:100 }}
       </div>

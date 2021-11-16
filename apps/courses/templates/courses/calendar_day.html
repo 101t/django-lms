@@ -17,7 +17,7 @@
 <h1>Events for {{ month }} - {{ day }} - {{ year }}</h1>
 <div class="calendar">
   {% for event in events %}
-    {{ event.1.start }} - {{ event.1.end }}: <a href="{% url courses:overview event.1.course.pk %}">{{ event.1.course.full_title }}</a> {{ event.1.title }}
+    {{ event.1.start }} - {{ event.1.end }}: <a href="{% url 'courses:overview' event.1.course.pk %}">{{ event.1.course.full_title }}</a> {{ event.1.title }}
   {% endfor %}  
 </div>
 {% endblock content %}

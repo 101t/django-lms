@@ -42,9 +42,9 @@
 {% endblock assignment_content %}
 
 {% block tools %}
-{% ifcoursefaculty %}<a href="{% url courses:edit_assignment assignment.id %}">Edit assignment</a>{% endifcoursefaculty %}
-{% ifcoursefaculty %}<a id="delete" href="#">Delete assignment</a>{% endifcoursefaculty %}{% ifcoursemember %}<a href="{% url courses:submit_assignment assignment.id %}">Submit solution</a>{% endifcoursemember %}
-{% ifcoursemember %}<a href="{% url courses:team_submit_assignment assignment.id %}">Submit solution for team</a>{% endifcoursemember %}
+{% ifcoursefaculty %}<a href="{% url 'courses:edit_assignment' assignment.id %}">Edit assignment</a>{% endifcoursefaculty %}
+{% ifcoursefaculty %}<a id="delete" href="#">Delete assignment</a>{% endifcoursefaculty %}{% ifcoursemember %}<a href="{% url 'courses:submit_assignment' assignment.id %}">Submit solution</a>{% endifcoursemember %}
+{% ifcoursemember %}<a href="{% url 'courses:team_submit_assignment' assignment.id %}">Submit solution for team</a>{% endifcoursemember %}
 {% endblock tools %}
 
 {% block js %}
@@ -68,7 +68,7 @@ $(document).ready(function(){
 
     $('.submission .delete').click(function(){
 	if (confirm('Delete submission?')){
-	    var delete_return = $.post('{% url courses:delete_submission %}', 
+	    var delete_return = $.post('{% url 'courses:delete_submission' %}',
 		   {id: $(this).data('submission')},
 		   function(data){
 		       window.location = data
@@ -78,7 +78,7 @@ $(document).ready(function(){
 
     $('#delete').click(function(){
 	if (confirm('Delete assignment?')){
-	    var delete_return = $.post('{% url courses:delete_assignment %}', 
+	    var delete_return = $.post('{% url 'courses:delete_assignment' %}',
 		   {id:{{ assignment.id }}},
 		   function(data){
 		       window.location = data

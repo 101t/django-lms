@@ -17,7 +17,7 @@ INSTALLED_APPS = [
 	'django.contrib.staticfiles',
 
 	# Third party apps
-	# 'compressor',
+	'compressor',
 	'django_celery_beat',
 	'django_extensions',
 
@@ -52,7 +52,7 @@ MIDDLEWARE = (
 TEMPLATES = [
 	{
 		'BACKEND': 'django.template.backends.django.DjangoTemplates',
-		'DIRS': [],
+		'DIRS': [os.path.join(BASE_DIR, 'templates')],
 		'APP_DIRS': True,
 		'OPTIONS': {
 			'context_processors': [
@@ -100,7 +100,7 @@ STATICFILES_FINDERS = (
 	'django.contrib.staticfiles.finders.FileSystemFinder',
 	'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 	# other finders..
-	# 'compressor.finders.CompressorFinder',
+	'compressor.finders.CompressorFinder',
 )
 
 STATIC_ROOT = os.path.join(BASE_DIR, 'static/')

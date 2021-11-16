@@ -13,7 +13,7 @@ $(document).ready(function(){
 	e.preventDefault();
 	$(this).html('working...');
 	$.ajax({
-	    url: "{% url courses:toggle-membership course.id %}",
+	    url: "{% url 'courses:toggle-membership' course.id %}",
 	    context: document.body,
 	    type: "POST",
 	    success: function(data){

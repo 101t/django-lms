@@ -7,7 +7,7 @@
     <div class="navbar-inner">
       <ul class="nav">
         {% block tools %}
-          {% ifcoursefaculty %}<li><a href="{% url courses:new_assignment course.id %}">New assignment</a></li>{% endifcoursefaculty %}
+          {% ifcoursefaculty %}<li><a href="{% url 'courses:new_assignment' course.id %}">New assignment</a></li>{% endifcoursefaculty %}
           <li><a href="#">Show by due date</a></li>
           <li><a href="#">Show by last modified</a></li>
           <li><a href="#">Show by created date</a></li>

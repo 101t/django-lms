@@ -6,11 +6,11 @@
 
 {% block title %}{{ semester }}{% endblock title %}
 {% block menu %}
-  <li><a href="{% url courses:calendar semester.id %}">Calendar</a></li> 
-  <li><a href="{% url courses:user_calendar semester.id %}">My Courses Calendar</a></li> 
-  <li><a href="{% url courses:semester_list %}">Browse Semesters</a></li>
+  <li><a href="{% url 'courses:calendar' semester.id %}">Calendar</a></li>
+  <li><a href="{% url 'courses:user_calendar' semester.id %}">My Courses Calendar</a></li>
+  <li><a href="{% url 'courses:semester_list' %}">Browse Semesters</a></li>
   
-  {% if 'Admissions' in groups %}<li class="right"><a href="{% url admin:courses_course_changelist %}">Admin Courses</a></li>{% endif %}
+  {% if 'Admissions' in groups %}<li class="right"><a href="{% url 'admin:courses_course_changelist' %}">Admin Courses</a></li>{% endif %}
 {% endblock menu %}
 
 {% block content %}
@@ -31,7 +31,7 @@
       <tr class="course-list-entry {% cycle 'even' 'odd' %}">
         <td class="course-number">{{ course.number }}</td>
         <td class="course-section">{{ course.section }}</td>
-        <td class="course-title"><a href="{% url courses:overview course.id %}">{{ course.title }}</a></td>
+        <td class="course-title"><a href="{% url 'courses:overview' course.id %}">{{ course.title }}</a></td>
         <td class="course-times">
           {% for event in course.schedule.all %}
             {{ event.readable|safe }}

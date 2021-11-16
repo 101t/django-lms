@@ -16,10 +16,10 @@ from django.contrib import admin
 urlpatterns = [
 	path('i18n/', include('django.conf.urls.i18n')),
 	path('admin/', admin.site.urls),
-	path('courses/', include('apps.courses.urls'), "courses"),
-	path('profiles/', include('apps.profiles.urls'), "profiles"),
-	path('alerts/', include('apps.alerts.urls'), "alerts"),
-	path('alerts/', include('apps.django_statsd.urls'), "django_statsd"),
+	path('courses/', include('apps.courses.urls'), ),  # "courses"
+	path('profiles/', include('apps.profiles.urls'), ),  # "profiles"
+	path('alerts/', include('apps.alerts.urls'), ),  # "alerts"
+	path('alerts/', include('apps.django_statsd.urls'), ),  # "django_statsd"
 	path('tinymce/', include('tinymce.urls')),
 	# path('api/', include(api.urls)),
 	path('accounts/login/', auth_login, {'template_name': 'accounts/login.html'}, name="login"),
@@ -29,5 +29,5 @@ urlpatterns = [
 	# Uncomment the admin/doc line below to enable admin documentation:
 	# url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 	path('', include('apps.springboard.urls')),
-] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)  # noqa
-
+] + static(settings.STATIC_URL, document_root=settings.STATIC_ROOT) + static(settings.MEDIA_URL,
+	                                                                       document_root=settings.MEDIA_ROOT)  # noqa

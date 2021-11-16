@@ -6,7 +6,7 @@
 {% block title %}Edit your preferences{% endblock title %}
 {% block content %}
 <h1>Edit your profile</h1>
-<form action="{% url profiles:preference_edit username=request.user.username %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<form action="{% url 'profiles:preference_edit' username=request.user.username %}" method="post" enctype="multipart/form-data">{% csrf_token %}
 <table>
 {{ form }}
 </table>

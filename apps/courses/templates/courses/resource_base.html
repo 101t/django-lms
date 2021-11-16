@@ -8,7 +8,7 @@
     <div class="navbar-inner">
       <ul class="nav">
 	    {% block tools %}
-          <li><a href="{% url courses:resource_create course.id %}">New resource</a></li>
+          <li><a href="{% url 'courses:resource_create' course.id %}">New resource</a></li>
         {% endblock tools %}
       </ul>        
     </div>

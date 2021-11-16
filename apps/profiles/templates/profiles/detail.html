@@ -18,7 +18,7 @@
  </div>
   <div class="span10 profile-text">
     <h1>Profile for {{ profile.user.get_full_name }}  {% if profile.user == request.user %}
-      <a href="{% url profiles:edit profile.user %}" class="btn btn-primary edit-button">Edit</a>
+      <a href="{% url 'profiles:edit' profile.user %}" class="btn btn-primary edit-button">Edit</a>
   {% endif %}
     </h1>
     {% if profile.is_alum %}

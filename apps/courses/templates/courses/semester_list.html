@@ -15,7 +15,7 @@
 <div id="semester-list">
   <h1>Semesters</h1>
   {% for semester in semesters %}
-    <a href="{% url courses:by_semester pk=semester.id %}">{{ semester }}</a><br>
+    <a href="{% url 'courses:by_semester' pk=semester.id %}">{{ semester }}</a><br>
   {% endfor %}  
 </div>
 {% endblock content %}

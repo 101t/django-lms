@@ -12,7 +12,7 @@
 {% block content %}
 <h1>Edit your profile</h1>
 {% include "profiles/socialauths_edit.html" %}
-<form action="{% url profiles:edit username=request.user.username %}" method="post" enctype="multipart/form-data">{% csrf_token %}
+<form action="{% url 'profiles:edit' username=request.user.username %}" method="post" enctype="multipart/form-data">{% csrf_token %}
 <table>
 {{ form }}
 </table>

@@ -32,7 +32,7 @@
 
 {% block tools %}
 <a id="delete" href="#">Delete resource</a>
-<a href="{% url courses:edit_resource resource.id %}">Edit resource</a>
+<a href="{% url 'courses:edit_resource' resource.id %}">Edit resource</a>
 {% endblock tools %}
 
 {% block js %}
@@ -41,7 +41,7 @@ $(document).ready(function(){
 
     $('#delete').click(function(){
 	if (confirm('Delete resource?')){
-	    var delete_return = $.post('{% url courses:delete_resource %}', 
+	    var delete_return = $.post('{% url 'courses:delete_resource' %}',
 		   {id: {{ resource.id }}},
 		   function(data){
 		       window.location = data
