@@ -7,6 +7,8 @@ celerybeat-schedule.db
 celerybeat.pid
 
 *.py[cod]
+__pycache__
+*.pyc
 
 # C extensions
 *.so
@@ -44,3 +46,5 @@ nosetests.xml
 env/
 venv/
 .vscode/
+
+db.sqlite3

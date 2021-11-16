@@ -1,4 +1,4 @@
-[![Build Status](https://travis-ci.org/instituteofdesign/django-lms.png)](https://travis-ci.org/instituteofdesign/django-lms)
+[![Build Status](https://travis-ci.org/101t/django-lms.png)](https://travis-ci.org/101t/django-lms)
 
 Django-lms
 =================================
@@ -12,7 +12,7 @@ If you're interested in helping, please drop me a line at cezar@id.iit.edu
 Requirements
 ------------
 
-Requires Python 2.7
+Requires Python 3.8
 
 Rest of the requirements should be installable with pip.
 
@@ -38,7 +38,7 @@ Installation
 
 - Clone the repo
 
- `git clone --recursive git@github.com:instituteofdesign/django-lms.git`
+ `git clone --recursive git@github.com:101t/django-lms.git`
 
 - Use the requirements file in the repo
 
@@ -53,7 +53,7 @@ Configuration
 
 - Sync the database
 
- `python manage.py syncdb`
+ `python manage.py migrate`
 
 - Run the dev server
 

@@ -1,5 +1,5 @@
 from django.contrib import admin
-from profiles.models import *
+from apps.profiles.models import Profile, Degree, UserDegree, Service
 
 admin.site.register(Profile)
 admin.site.register(Degree)

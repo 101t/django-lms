@@ -1,142 +1,121 @@
-from django.conf import settings
-from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User, Group
+from django.urls import reverse
 
 import libs.test_utils as test_utils
-from alerts.models import Alert
-from alerts.tasks import alert_userlist, alert_groups
+from .models import Alert
+from .tasks import alert_userlist, alert_groups
 
-if settings.NONREL:
-    from permission_backend_nonrel.utils import update_user_groups
 
 class AlertTest(test_utils.AuthenticatedTest):
-    def test_acknowlege(self):
-        """
-        Tests the user acknowledgeing and deleteing an alert
-        """
+	def test_acknowlege(self):
+		"""
+		Tests the user acknowledgeing and deleteing an alert
+		"""
 
-        # Create the alert
-        alert = Alert.objects.create(sent_by = 'Tester',
-                                     sent_to = self.user,
-                                     title = 'Test title',
-                                     details = 'No details',
-                                     level = 'Notice',)
-        
-        self.c.post(reverse('alerts:acknowledge'), {'pk':alert.id})
+		# Create the alert
+		alert = Alert.objects.create(sent_by='Tester',
+		                             sent_to=self.user,
+		                             title='Test title',
+		                             details='No details',
+		                             level='Notice', )
 
-        with self.assertRaises(Alert.DoesNotExist):
-            Alert.objects.get(id = alert.id)
-        
-    def test_alert_all(self):
-        """
-        Tests the ability of the system to alert all users
-        """
+		self.c.post(reverse('alerts:acknowledge'), {'pk': alert.id})
 
-        # Create a load of users
-        for i in range(0, 100):
-            User.objects.create(username = 'user_%s' %(i))
+		with self.assertRaises(Alert.DoesNotExist):
+			Alert.objects.get(id=alert.id)
 
-        users = User.objects.all()
+	def test_alert_all(self):
+		"""
+		Tests the ability of the system to alert all users
+		"""
 
-        # Create the alert
-        alert = Alert(sent_by = 'Tester',
-                      title = 'Test title',
-                      details = 'No details',
-                      level = 'Notice',)
+		# Create a load of users
+		for i in range(0, 100):
+			User.objects.create(username='user_%s' % (i))
 
-        alert_userlist(alert, users)
+		users = User.objects.all()
 
-        self.assertEquals(len(Alert.objects.all()), len(User.objects.all()))
-        
+		# Create the alert
+		alert = Alert(sent_by='Tester',
+		              title='Test title',
+		              details='No details',
+		              level='Notice', )
 
-    def test_alert_group(self):
-        """
-        Tests the ability of the system to alert a group of users
-        """
+		alert_userlist(alert, users)
 
-        # Create groups
-        group = Group.objects.create(name = 'test1')
+		self.assertEquals(len(Alert.objects.all()), len(User.objects.all()))
 
-        # Create a load of users
-        for i in range(50):
-            user = User.objects.create(username = 'user_%s' %(i))
-            if settings.NONREL:
-                update_user_groups(user, [group])
-            else:
-                group.user_set.add(user)
-                
-        for i in range(50, 100):
-            user = User.objects.create(username = 'user_%s' %(i))
+	def test_alert_group(self):
+		"""
+		Tests the ability of the system to alert a group of users
+		"""
 
+		# Create groups
+		group = Group.objects.create(name='test1')
 
-        alert = Alert(sent_by = 'Tester',
-                      title = 'Test title',
-                      details = 'No details',
-                      level = 'Notice',)
+		# Create a load of users
+		for i in range(50):
+			user = User.objects.create(username='user_%s' % (i))
+			group.user_set.add(user)
 
-        alert_groups(alert, group)
+		for i in range(50, 100):
+			user = User.objects.create(username='user_%s' % (i))
 
-        self.assertEquals(len(Alert.objects.all()), 50)
+		alert = Alert(sent_by='Tester',
+		              title='Test title',
+		              details='No details',
+		              level='Notice', )
 
+		alert_groups(alert, group)
 
-    def test_alert_groups(self):
-        """
-        Tests the ability of the system to alert groups of users
-        """
+		self.assertEquals(len(Alert.objects.all()), 50)
 
-        # Create groups
-        group1 = Group.objects.create(name = 'test1')
-        group2 = Group.objects.create(name = 'test2')
-        
-        # Create a load of users
-        for i in range(25):
-            user = User.objects.create(username = 'user_%s' %(i))
-            if settings.NONREL:
-                update_user_groups(user, [group1])
-            else:
-                group1.user_set.add(user)
+	def test_alert_groups(self):
+		"""
+		Tests the ability of the system to alert groups of users
+		"""
 
-        for i in range(25, 50):
-            user = User.objects.create(username = 'user_%s' %(i))
-            
-            if settings.NONREL:
-                update_user_groups(user, [group2])
-            else:
-                group2.user_set.add(user)
+		# Create groups
+		group1 = Group.objects.create(name='test1')
+		group2 = Group.objects.create(name='test2')
 
+		# Create a load of users
+		for i in range(25):
+			user = User.objects.create(username='user_%s' % (i))
+			group1.user_set.add(user)
 
-        for i in range(50, 100):
-            user = User.objects.create(username = 'user_%s' %(i))
+		for i in range(25, 50):
+			user = User.objects.create(username='user_%s' % (i))
+			group2.user_set.add(user)
 
+		for i in range(50, 100):
+			user = User.objects.create(username='user_%s' % (i))
 
-        alert = Alert(sent_by = 'Tester',
-                      title = 'Test title',
-                      details = 'No details',
-                      level = 'Notice',)
+		alert = Alert(sent_by='Tester',
+		              title='Test title',
+		              details='No details',
+		              level='Notice', )
 
-        alert_groups(alert, [group1, group2])
-        
-        self.assertEquals(len(Alert.objects.all()), 50)
+		alert_groups(alert, [group1, group2])
 
-    def test_alert_email(self):
-        """
-        Tests the ability of the system to send alert emails
-        """
-        from django.core import mail
-        from profiles.models import Profile
-        
-        self.user.profile.preferences['email_alerts'] = True
-        self.user.profile.save()
+		self.assertEquals(len(Alert.objects.all()), 50)
 
-        self.assertEquals(len(mail.outbox), 0)
-        
-        alert = Alert.objects.create(sent_by = 'Tester',
-                                     title = 'Test title',
-                                     details = 'No details',
-                                     level = 'Notice',
-                                     sent_to = self.user,
-                                 )
-        
-        self.assertEquals(len(mail.outbox), 1)
+	def test_alert_email(self):
+		"""
+		Tests the ability of the system to send alert emails
+		"""
+		from django.core import mail
 
+		self.user.profile.preferences['email_alerts'] = True
+		self.user.profile.save()
 
+		self.assertEquals(len(mail.outbox), 0)
+
+		alert = Alert.objects.create(sent_by='Tester',
+		                             title='Test title',
+		                             details='No details',
+		                             level='Notice',
+		                             sent_to=self.user,
+		                             )
+
+		self.assertEquals(len(mail.outbox), 1)
