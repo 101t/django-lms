@@ -11,7 +11,14 @@
   </div>
   {% else %}
   <label class="form-label{% if field.field.required %} required{% endif %}" {% if kind != "radio" %}for="{{ field.id_for_label }}"{% endif %}>{{ field.label }}</label>
-  {% if kind == "radio" %}<div class="radio-group">{{ field|bs }}</div>{% else %}{{ field|bs }}{% endif %}
+  {% if kind == "radio" %}
+  {% for choice in field %}
+  <div class="form-check">
+    <input class="form-check-input{% if field.errors %} is-invalid{% endif %}" type="{{ choice.data.type }}" name="{{ choice.data.name }}" value="{{ choice.data.value|stringformat:'s' }}" id="{{ choice.id_for_label }}"{% if choice.data.selected %} checked{% endif %}{% if field.field.required and choice.data.type == "radio" %} required{% endif %}>
+    <label class="form-check-label" for="{{ choice.id_for_label }}">{{ choice.choice_label }}</label>
+  </div>
+  {% endfor %}
+  {% else %}{{ field|bs }}{% endif %}
   {% endif %}
   {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
   {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}

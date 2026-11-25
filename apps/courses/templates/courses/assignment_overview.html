@@ -13,7 +13,7 @@
 {% endblock %}
 {% block course_content %}
 <h2 class="h4">{{ assignment.title }}</h2>
-{% if assignment.due_date %}<p class="text-body-secondary"><i class="bi bi-calendar-event"></i> Due {{ assignment.due_date|date:"l, F j, Y" }}</p>{% endif %}
+<p class="text-body-secondary"><i class="bi bi-trophy"></i> {{ assignment.points }} points{% if assignment.due_date %} · <i class="bi bi-calendar-event"></i> Due {{ assignment.due_date|date:"l, F j, Y" }}{% endif %}</p>
 <div class="prose mb-4">{{ assignment.description|safe }}</div>
 
 <h3 class="h5">{% if is_faculty %}All submissions{% else %}Your submissions{% endif %} <span class="badge text-bg-secondary">{{ submissions|length }}</span></h3>

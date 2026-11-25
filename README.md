@@ -23,6 +23,7 @@ small, readable Django codebase that you can deploy on a $5 server.
 - **Courses & semesters** — public or private courses, faculty, teaching assistants and students, self-enrolment for students.
 - **Schedules & calendars** — recurring class meetings (iCal RRULEs), a semester calendar and a personal "my courses" calendar.
 - **Assignments** — rich-text briefs, due dates, file or link submissions, team submissions and late flags.
+- **Grading & gradebook** — score submissions against each assignment's points with written feedback, students are alerted when graded, and a per-course gradebook shows every student's scores and overall percentage (students see only their own).
 - **Resources** — share files and links per course.
 - **Alerts** — broadcast announcements to a user, groups or everyone, with optional email delivery in the background.
 - **Dashboard** — a configurable app launcher, your courses and upcoming deadlines at a glance.

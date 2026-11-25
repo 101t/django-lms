@@ -6,7 +6,8 @@
   {% for assignment in assignments %}
   <a class="list-group-item list-group-item-action d-flex justify-content-between align-items-center" href="{{ assignment.get_absolute_url }}">
     <span><i class="bi bi-file-earmark-text me-2"></i>{{ assignment.title }}</span>
-    {% if assignment.due_date %}<span class="badge text-bg-light border">Due {{ assignment.due_date|date:"M j" }}</span>{% endif %}
+    <span><span class="badge text-bg-light border">{{ assignment.points }} pts</span>
+    {% if assignment.due_date %}<span class="badge text-bg-light border">Due {{ assignment.due_date|date:"M j" }}</span>{% endif %}</span>
   </a>
   {% empty %}<div class="text-body-secondary">No assignments yet.</div>{% endfor %}
 </div>

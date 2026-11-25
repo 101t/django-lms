@@ -191,6 +191,7 @@ class AssignmentTest(test_utils.AuthenticatedTest):
 				"title": "Test Assignment",
 				"description": "Test of the description <b>HERE</b>",
 				"due_date": (datetime.date.today() + one_week).isoformat(),
+				"points": 100,
 			},
 		)
 
@@ -231,6 +232,7 @@ class AssignmentTest(test_utils.AuthenticatedTest):
 				"title": "Test Assignment",
 				"description": "Test of the description <b>HERE</b>",
 				"due_date": (datetime.date.today() + one_week).isoformat(),
+				"points": 100,
 			},
 		)
 
@@ -341,6 +343,7 @@ class AssignmentTest(test_utils.AuthenticatedTest):
 				"title": "Test Assignment",
 				"description": "Test of the description <b>HERE</b>",
 				"due_date": (datetime.date.today() + one_week).isoformat(),
+				"points": 100,
 			},
 		)
 
@@ -406,6 +409,7 @@ class ResourceTest(test_utils.AuthenticatedTest):
 				"title": "Test Resource",
 				"description": "Test of the description <b>HERE</b>",
 				"due_date": (datetime.date.today() + one_week).isoformat(),
+				"points": 100,
 			},
 		)
 
@@ -520,3 +524,54 @@ class SemesterEventsTest(test_utils.AuthenticatedTest):
 		self.assertIn(datetime.date(2024, 1, 4), events)  # a Thursday
 		self.assertEqual(self.c.get(reverse("courses:calendar", args=[semester.pk])).status_code, 200)
 		self.assertEqual(self.c.get(reverse("courses:calendar_day", args=[2024, 1, 4])).status_code, 200)
+
+
+class GradingTest(test_utils.AuthenticatedTest):
+	def setUp(self):
+		super().setUp()
+		self.extra_users()
+		semester = Semester.objects.create(
+			name="Spring", year=2012, start=datetime.date(2012, 1, 1), end=datetime.date(2012, 5, 1)
+		)
+		self.course = Course.objects.create(title="C", number="1", section="1", description="d", semester=semester)
+		self.course.members.add(*self.users)
+		self.a1 = Assignment.objects.create(course=self.course, title="A1", description="d", points=50)
+		self.a2 = Assignment.objects.create(course=self.course, title="A2", description="d", points=50)
+		self.submission = AssignmentSubmission.objects.create(assignment=self.a1, link="http://example.com")
+		self.submission.users.add(self.users[0], self.users[1])
+		self.url = reverse("courses:grade_submission", args=[self.submission.pk])
+
+	def test_only_faculty_can_grade(self):
+		self.assertEqual(self.c.post(self.url, {"score": "40"}).status_code, 403)
+		self.course.members.add(self.user)
+		self.assertEqual(self.c.post(self.url, {"score": "40"}).status_code, 403)
+
+	def test_grade_notifies_team_and_shows_in_gradebook(self):
+		from apps.alerts.models import Alert
+
+		self.course.faculty.add(self.user)
+		response = self.c.post(self.url, {"score": "40", "feedback": "Nice work"})
+		self.assertRedirects(response, self.a1.get_absolute_url())
+		self.submission.refresh_from_db()
+		self.assertEqual(self.submission.score, 40)
+		self.assertEqual(self.submission.percent(), 80)
+		self.assertIsNotNone(self.submission.graded)
+		self.assertEqual(Alert.objects.filter(sent_to__in=self.users[:2], details="Nice work").count(), 2)
+
+		rows = self.c.get(reverse("courses:gradebook", args=[self.course.pk])).context["rows"]
+		self.assertEqual(len(rows), 3)
+		by_user = {student: (cells, total) for student, cells, total in rows}
+		self.assertEqual(by_user[self.users[0]], ([self.submission, None], 80))
+		self.assertEqual(by_user[self.users[2]], ([None, None], None))
+
+	def test_score_out_of_range_rejected(self):
+		self.course.faculty.add(self.user)
+		self.c.post(self.url, {"score": "51"})
+		self.submission.refresh_from_db()
+		self.assertIsNone(self.submission.score)
+
+	def test_student_sees_only_own_grades(self):
+		self.assertEqual(self.c.get(reverse("courses:gradebook", args=[self.course.pk])).status_code, 403)
+		self.course.members.add(self.user)
+		rows = self.c.get(reverse("courses:gradebook", args=[self.course.pk])).context["rows"]
+		self.assertEqual([student for student, _, _ in rows], [self.user])

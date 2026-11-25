@@ -40,7 +40,7 @@ class CourseSerializer(serializers.ModelSerializer):
 class AssignmentSerializer(serializers.ModelSerializer):
 	class Meta:
 		model = Assignment
-		fields = ("id", "course", "title", "description", "due_date")
+		fields = ("id", "course", "title", "description", "due_date", "points")
 
 
 class ResourceSerializer(serializers.ModelSerializer):

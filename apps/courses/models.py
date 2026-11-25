@@ -138,6 +138,7 @@ class Assignment(models.Model):
 	title = models.CharField(max_length=200)
 	description = HTMLField()
 	due_date = models.DateField(null=True, blank=True)
+	points = models.PositiveIntegerField(default=100, help_text=_("Maximum score"))
 
 	class Meta:
 		ordering = ["due_date", "title"]
@@ -157,11 +158,20 @@ class AssignmentSubmission(models.Model):
 	file = models.FileField(upload_to="submissions/%Y/%m/%d", blank=True)
 	notes = models.TextField(blank=True)
 
+	score = models.DecimalField(max_digits=6, decimal_places=2, null=True, blank=True)
+	feedback = models.TextField(blank=True)
+	graded = models.DateTimeField(null=True, blank=True)
+
 	submitted = models.DateTimeField(auto_now_add=True)
 	modified = models.DateTimeField(auto_now=True)
 
 	class Meta:
 		ordering = ["-submitted"]
+
+	def percent(self):
+		if self.score is None or not self.assignment.points:
+			return None
+		return round(float(self.score) * 100 / self.assignment.points)
 
 	def late(self):
 		return bool(self.assignment.due_date) and self.submitted.date() > self.assignment.due_date

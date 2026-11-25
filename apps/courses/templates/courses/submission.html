@@ -3,11 +3,22 @@
   <div>
     <div class="fw-semibold">{{ submission.users.all|join:", " }}
       {% if submission.late %}<span class="badge text-bg-warning">Late</span>{% endif %}
+      {% if submission.score is not None %}<span class="badge text-bg-success">{{ submission.score|floatformat:"-2" }}/{{ submission.assignment.points }} · {{ submission.percent }}%</span>{% endif %}
     </div>
     {% if submission.link %}<div><i class="bi bi-link-45deg"></i> <a href="{{ submission.link }}" rel="noopener" target="_blank">{{ submission.link }}</a></div>{% endif %}
     {% if submission.file %}<div><i class="bi bi-paperclip"></i> <a href="{{ submission.file.url }}">{{ submission.file.name|basename }}</a></div>{% endif %}
     {% if submission.notes %}<div class="small mt-1">{{ submission.notes|linebreaksbr }}</div>{% endif %}
-    <div class="small text-body-secondary">Submitted {{ submission.submitted|date:"M j, Y H:i" }}</div>
+    <div class="small text-body-secondary">Submitted {{ submission.submitted|date:"M j, Y H:i" }}{% if submission.graded %} · Graded {{ submission.graded|date:"M j, Y H:i" }}{% endif %}</div>
+    {% if submission.feedback %}<div class="small mt-2 p-2 border-start border-3 border-success bg-body-tertiary"><i class="bi bi-chat-left-text"></i> {{ submission.feedback|linebreaksbr }}</div>{% endif %}
+    {% if is_faculty %}
+    <form method="post" action="{% url 'courses:grade_submission' submission.pk %}" class="row g-2 mt-2 align-items-start">{% csrf_token %}
+      <div class="col-auto"><div class="input-group input-group-sm" style="width: 9rem">
+        <input class="form-control" type="number" name="score" step="0.01" min="0" max="{{ submission.assignment.points }}" value="{{ submission.score|default_if_none:''|stringformat:'s' }}" aria-label="Score">
+        <span class="input-group-text">/ {{ submission.assignment.points }}</span></div></div>
+      <div class="col"><textarea class="form-control form-control-sm" name="feedback" rows="1" placeholder="Feedback for the student" aria-label="Feedback">{{ submission.feedback }}</textarea></div>
+      <div class="col-auto"><button class="btn btn-sm btn-success" type="submit"><i class="bi bi-check2"></i> Grade</button></div>
+    </form>
+    {% endif %}
   </div>
   <form method="post" action="{% url 'courses:delete_submission' submission.pk %}" data-confirm="Delete this submission?">{% csrf_token %}<button class="btn btn-sm btn-outline-danger" type="submit" aria-label="Delete submission"><i class="bi bi-trash"></i></button></form>
 </div>

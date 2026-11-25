@@ -1,0 +1,26 @@
+{% extends "courses/course_base.html" %}
+{% block title %}Grades · {{ course.title }}{% endblock %}
+{% block course_breadcrumbs %}<li class="breadcrumb-item active">Grades</li>{% endblock %}
+{% block course_content %}
+{% if not assignments %}<div class="text-body-secondary">No assignments yet.</div>{% else %}
+<div class="table-responsive">
+<table class="table table-sm table-hover align-middle">
+  <caption class="small">Latest graded submission per assignment. Overall % counts graded assignments only.</caption>
+  <thead><tr>
+    <th scope="col">Student</th>
+    {% for assignment in assignments %}<th scope="col" class="text-center"><a href="{{ assignment.get_absolute_url }}">{{ assignment.title }}</a><div class="small fw-normal text-body-secondary">{{ assignment.points }} pts</div></th>{% endfor %}
+    <th scope="col" class="text-end">Overall</th>
+  </tr></thead>
+  <tbody>
+  {% for student, cells, total in rows %}
+  <tr>
+    <th scope="row">{{ student.get_full_name|default:student.username }}</th>
+    {% for submission in cells %}<td class="text-center">{% if submission %}<span title="{{ submission.feedback }}">{{ submission.score|floatformat:"-2" }}</span>{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>{% endfor %}
+    <td class="text-end">{% if total is not None %}<span class="badge {% if total >= 90 %}text-bg-success{% elif total >= 70 %}text-bg-primary{% elif total >= 50 %}text-bg-warning{% else %}text-bg-danger{% endif %}">{{ total }}%</span>{% else %}<span class="text-body-secondary">—</span>{% endif %}</td>
+  </tr>
+  {% empty %}<tr><td colspan="99" class="text-body-secondary">No students enrolled.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endif %}
+{% endblock %}

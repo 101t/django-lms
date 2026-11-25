@@ -33,6 +33,8 @@ urlpatterns = [
 	route("assignment/<int:pk>/delete/", views.DeleteAssignment, "delete_assignment"),
 	route("assignment/<int:pk>/submit/", views.SubmitAssignment, "submit_assignment"),
 	route("assignment/<int:pk>/team_submit/", views.TeamSubmitAssignment, "team_submit_assignment"),
+	route("assignment_submission/<int:pk>/grade/", views.GradeSubmission, "grade_submission"),
+	route("<int:pk>/grades/", views.Gradebook, "gradebook"),
 	route("assignment_submission/<int:pk>/delete/", views.DeleteSubmission, "delete_submission"),
 	# Calendars
 	route("calendar/", views.CourseCalendar, "calendar"),

@@ -45,14 +45,14 @@ class SemesterAdmin(admin.ModelAdmin):
 
 @admin.register(Assignment)
 class AssignmentAdmin(admin.ModelAdmin):
-	list_display = ("title", "course", "due_date")
+	list_display = ("title", "course", "due_date", "points")
 	list_filter = ("course__semester",)
 	search_fields = ("title", "course__title")
 
 
 @admin.register(AssignmentSubmission)
 class AssignmentSubmissionAdmin(admin.ModelAdmin):
-	list_display = ("__str__", "assignment", "submitted")
+	list_display = ("__str__", "assignment", "submitted", "score")
 	filter_horizontal = ("users",)
 
 

@@ -7,6 +7,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.shortcuts import get_object_or_404, redirect
 from django.urls import reverse
+from django.utils import timezone
 from django.utils.safestring import mark_safe
 from django.views.generic import (
 	CreateView,
@@ -19,8 +20,17 @@ from django.views.generic import (
 	View,
 )
 
+from apps.alerts.tasks import send_alert
+
 from .coursecalendar import HTMLCourseCalendar
-from .forms import AssignmentForm, CourseAdminForm, ResourceForm, SubmitAssignmentForm, TeamSubmitAssignmentForm
+from .forms import (
+	AssignmentForm,
+	CourseAdminForm,
+	GradeSubmissionForm,
+	ResourceForm,
+	SubmitAssignmentForm,
+	TeamSubmitAssignmentForm,
+)
 from .models import Assignment, AssignmentSubmission, Course, Resource, Semester
 
 
@@ -244,6 +254,68 @@ class DeleteSubmission(CourseAccessMixin, DeleteView):
 
 	def get_success_url(self):
 		return self.object.assignment.get_absolute_url()
+
+
+class GradeSubmission(CourseAccessMixin, UpdateView):
+	require = "faculty"
+	course_from = AssignmentSubmission
+	model = AssignmentSubmission
+	form_class = GradeSubmissionForm
+	http_method_names = ["post"]
+
+	def form_valid(self, form):
+		form.instance.graded = timezone.now() if form.instance.score is not None else None
+		response = super().form_valid(form)
+		assignment = self.object.assignment
+		if self.object.score is not None:
+			send_alert(
+				self.object.users.all(),
+				title=f"Graded: {assignment.title} — {self.object.score}/{assignment.points}",
+				details=self.object.feedback,
+				level="info",
+				sent_by=str(self.course),
+			)
+		messages.success(self.request, "Grade saved.")
+		return response
+
+	def form_invalid(self, form):
+		for errors in form.errors.values():
+			messages.error(self.request, " ".join(errors))
+		return redirect(self.get_success_url())
+
+	def get_success_url(self):
+		return self.object.assignment.get_absolute_url()
+
+
+class Gradebook(CourseAccessMixin, TemplateView):
+	"""Faculty see every student; a student sees only their own row. Latest graded submission counts."""
+
+	template_name = "courses/gradebook.html"
+
+	def get_context_data(self, **kwargs):
+		context = super().get_context_data(**kwargs)
+		user = self.request.user
+		if context["is_faculty"]:
+			students = self.course.members.order_by("last_name", "first_name", "username")
+		elif context["is_member"]:
+			students = [user]
+		else:
+			raise PermissionDenied
+		assignments = list(self.course.assignment_set.all())
+		latest = {}
+		submissions = AssignmentSubmission.objects.filter(assignment__course=self.course, score__isnull=False)
+		for submission in submissions.order_by("graded").prefetch_related("users"):
+			for member in submission.users.all():
+				latest[member.pk, submission.assignment_id] = submission
+		rows = []
+		for student in students:
+			cells = [latest.get((student.pk, a.pk)) for a in assignments]
+			graded = [(cell.score, a.points) for cell, a in zip(cells, assignments, strict=True) if cell]
+			possible = sum(points for _, points in graded)
+			total = round(float(sum(score for score, _ in graded)) * 100 / possible) if possible else None
+			rows.append((student, cells, total))
+		context.update(assignments=assignments, rows=rows)
+		return context
 
 
 # Resources

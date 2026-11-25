@@ -18,6 +18,7 @@
   <li class="nav-item"><a class="nav-link{% if tab == 'overview' %} active{% endif %}" href="{% url 'courses:overview' course.pk %}">Overview</a></li>
   <li class="nav-item"><a class="nav-link{% if tab == 'resources' or tab == 'resource_details' or tab == 'resource_create' or tab == 'edit_resource' %} active{% endif %}" href="{% url 'courses:resources' course.pk %}">Resources</a></li>
   <li class="nav-item"><a class="nav-link{% if tab == 'assignments' or tab == 'assignment_overview' or tab == 'new_assignment' or tab == 'edit_assignment' or tab == 'submit_assignment' or tab == 'team_submit_assignment' %} active{% endif %}" href="{% url 'courses:assignments' course.pk %}">Assignments</a></li>
+  {% if is_faculty or is_member %}<li class="nav-item"><a class="nav-link{% if tab == 'gradebook' %} active{% endif %}" href="{% url 'courses:gradebook' course.pk %}">Grades</a></li>{% endif %}
   <li class="nav-item"><a class="nav-link{% if tab == 'members' %} active{% endif %}" href="{% url 'courses:members' course.pk %}">People</a></li>
   {% if is_faculty %}<li class="nav-item"><a class="nav-link{% if tab == 'admin' %} active{% endif %}" href="{% url 'courses:admin' course.pk %}">Settings</a></li>{% endif %}
 </ul>
