@@ -1,0 +1,23 @@
+/* Small additions on top of Bootstrap 5.3. Colours come from Bootstrap variables so dark mode just works. */
+body { min-height: 100vh; display: flex; flex-direction: column; }
+main { flex: 1; }
+.form-label.required::after { content: " *"; color: var(--bs-danger); }
+.radio-group > div > div { margin-bottom: .25rem; }
+.radio-group input { margin-right: .4rem; }
+
+.app-tile { transition: transform .15s ease, box-shadow .15s ease; }
+.app-tile:hover { transform: translateY(-3px); box-shadow: var(--bs-box-shadow) !important; }
+.app-tile .bi { font-size: 2.25rem; }
+.app-tile img { width: 48px; height: 48px; object-fit: contain; }
+
+.course-calendar { table-layout: fixed; }
+.course-calendar th.month { font-size: 1.1rem; padding: .75rem; background: var(--bs-tertiary-bg); }
+.course-calendar th { text-align: center; font-weight: 500; font-size: .8rem; text-transform: uppercase; color: var(--bs-secondary-color); }
+.course-calendar td { height: 6rem; vertical-align: top; font-size: .78rem; padding: .3rem; }
+.course-calendar td.noday { background: var(--bs-tertiary-bg); }
+.course-calendar td.today { background: var(--bs-primary-bg-subtle); }
+.course-calendar .day-number { font-weight: 600; display: block; margin-bottom: .15rem; }
+.course-calendar .event { line-height: 1.3; }
+
+.prose img { max-width: 100%; height: auto; }
+.avatar { width: 96px; height: 96px; object-fit: cover; }

@@ -1,0 +1,9 @@
+# Loaded automatically when you run `docker compose` from a git checkout:
+# builds the image from source instead of pulling it from GHCR.
+services:
+  web:
+    build: .
+  worker:
+    build: .
+  beat:
+    build: .

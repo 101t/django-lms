@@ -1,23 +1,17 @@
 {% extends "html_base.html" %}
-{% load breadcrumbs %}
-
+{% block title %}{{ day|date:"F j, Y" }}{% endblock %}
 {% block breadcrumbs %}
-{% breadcrumb_url "{{ semester }}" courses:by_semester semester.id %}
-{% breadcrumb_url "Calendar" courses:calendar %}
-{% breadcrumb "By Day" %}
-{% endblock breadcrumbs %}
-
-{% block title %}{{ course.title }}{% endblock title %}
-
-{% block aside %}
+<li class="breadcrumb-item"><a href="{% if user_cal %}{% url 'courses:user_calendar' semester.pk %}{% else %}{% url 'courses:calendar' semester.pk %}{% endif %}">Calendar</a></li>
+<li class="breadcrumb-item active">{{ day|date:"M j" }}</li>
 {% endblock %}
-{% block content_attributes %}class="span12"{% endblock %}
-
 {% block content %}
-<h1>Events for {{ month }} - {{ day }} - {{ year }}</h1>
-<div class="calendar">
-  {% for event in events %}
-    {{ event.1.start }} - {{ event.1.end }}: <a href="{% url 'courses:overview' event.1.course.pk %}">{{ event.1.course.full_title }}</a> {{ event.1.title }}
-  {% endfor %}  
+<h1 class="h2 mb-3">{{ day|date:"l, F j, Y" }}</h1>
+<div class="list-group">
+  {% for occurrence, event in events %}
+  <a class="list-group-item list-group-item-action" href="{{ event.course.get_absolute_url }}">
+    <div class="fw-semibold">{{ event.start|time:"H:i" }}–{{ event.end|time:"H:i" }} · {{ event.course.full_title }}</div>
+    <div class="small text-body-secondary">{{ event.title }} · {{ event.course.location }}</div>
+  </a>
+  {% empty %}<div class="text-body-secondary">Nothing scheduled.</div>{% endfor %}
 </div>
-{% endblock content %}
+{% endblock %}

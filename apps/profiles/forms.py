@@ -1,25 +1,38 @@
 from django import forms
-
 from tinymce.widgets import TinyMCE
-from libs.widgets import ShortNameClearableFileInput
+
+from .models import Profile
 
 
-class ProfileForm(forms.Form):
-	mugshot = forms.FileField(label='Profile image', required=False, widget=ShortNameClearableFileInput)
-	resume = forms.FileField(label='Resume', required=False, widget=ShortNameClearableFileInput)
-	biography = forms.CharField(widget=TinyMCE(attrs={'cols': 150, 'rows': 30, }, mce_attrs={'width': '561px'}))
+class ProfileForm(forms.ModelForm):
+	first_name = forms.CharField(max_length=150, required=False)
+	last_name = forms.CharField(max_length=150, required=False)
+	email = forms.EmailField(required=False)
+	biography = forms.CharField(widget=TinyMCE(), required=False)
 
-	def save(self, profile):
-		profile.mugshot = self.cleaned_data['mugshot']
-		profile.resume = self.cleaned_data['resume']
+	class Meta:
+		model = Profile
+		fields = ("first_name", "last_name", "email", "mugshot", "resume", "biography")
 
-		profile.data['biography'] = self.cleaned_data['biography']
-		profile.save()
+	def __init__(self, *args, **kwargs):
+		super().__init__(*args, **kwargs)
+		user = self.instance.user
+		self.initial.update(
+			first_name=user.first_name, last_name=user.last_name, email=user.email, biography=self.instance.biography
+		)
+
+	def save(self, commit=True):
+		user = self.instance.user
+		for field in ("first_name", "last_name", "email"):
+			setattr(user, field, self.cleaned_data[field])
+		user.save()
+		self.instance.data = {**(self.instance.data or {}), "biography": self.cleaned_data["biography"]}
+		return super().save(commit)
 
 
 class PreferenceForm(forms.Form):
-	email_alerts = forms.BooleanField(label='Email new notifications and alerts to me')
+	email_alerts = forms.BooleanField(label="Email new notifications and alerts to me", required=False)
 
 	def save(self, profile):
-		profile.preferences['email_alerts'] = self.cleaned_data['email_alerts']
-		profile.save()
+		profile.preferences = {**(profile.preferences or {}), "email_alerts": self.cleaned_data["email_alerts"]}
+		profile.save(update_fields=["preferences"])

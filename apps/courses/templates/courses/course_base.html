@@ -1,10 +1,26 @@
 {% extends "html_base.html" %}
-{% block title %}{{ course.title }}{% endblock title %}
-{% block menu %}
- {% include "courses/menu.html" %}
-{% endblock menu %}
+{% block title %}{{ course.title }}{% endblock %}
+{% block breadcrumbs %}
+<li class="breadcrumb-item"><a href="{% url 'courses:by_semester' course.semester_id %}">{{ course.semester }}</a></li>
+<li class="breadcrumb-item"><a href="{% url 'courses:overview' course.pk %}">{{ course.number }}-{{ course.section }}</a></li>
+{% block course_breadcrumbs %}{% endblock %}
+{% endblock %}
 {% block content %}
-<h1 class="course-title">{{ course.title }}</h1>
- {% block course_content %}
- {% endblock course_content %}
-{% endblock content %}
+{% with tab=request.resolver_match.url_name %}
+<div class="d-flex flex-wrap justify-content-between align-items-start gap-3 mb-3">
+  <div>
+    <h1 class="h2 mb-1">{{ course.title }}{% if course.private %} <span class="badge text-bg-secondary align-middle fs-6"><i class="bi bi-lock"></i> Private</span>{% endif %}</h1>
+    <div class="text-body-secondary">{{ course.number }}-{{ course.section }} · {{ course.semester }} · {{ course.credits }} credits · {{ course.location }}</div>
+  </div>
+  <div class="d-flex gap-2">{% block course_actions %}{% endblock %}</div>
+</div>
+<ul class="nav nav-tabs mb-4">
+  <li class="nav-item"><a class="nav-link{% if tab == 'overview' %} active{% endif %}" href="{% url 'courses:overview' course.pk %}">Overview</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'resources' or tab == 'resource_details' or tab == 'resource_create' or tab == 'edit_resource' %} active{% endif %}" href="{% url 'courses:resources' course.pk %}">Resources</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'assignments' or tab == 'assignment_overview' or tab == 'new_assignment' or tab == 'edit_assignment' or tab == 'submit_assignment' or tab == 'team_submit_assignment' %} active{% endif %}" href="{% url 'courses:assignments' course.pk %}">Assignments</a></li>
+  <li class="nav-item"><a class="nav-link{% if tab == 'members' %} active{% endif %}" href="{% url 'courses:members' course.pk %}">People</a></li>
+  {% if is_faculty %}<li class="nav-item"><a class="nav-link{% if tab == 'admin' %} active{% endif %}" href="{% url 'courses:admin' course.pk %}">Settings</a></li>{% endif %}
+</ul>
+{% endwith %}
+{% block course_content %}{% endblock %}
+{% endblock %}

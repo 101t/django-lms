@@ -1,54 +1,16 @@
-{% extends "courses/resource_base.html" %}
-{% load courses %}
+{% extends "courses/course_base.html" %}
 {% load util %}
-{% load breadcrumbs %}
-
-{% block breadcrumbs %}
-{% breadcrumb_url "{{ course }}" courses:overview course.id %}
-{% breadcrumb "Resources" %}
-{% endblock breadcrumbs %}
-
-{% block page_title %}<span class="san-serif">{{ resource.title }}</span>{% endblock page_title %}
-{% block resource_content %}
-<div id="resource">
-  <div class="resource-details">
-   <div class="resource-description">
-      {{ resource.description|safe }}
-    </div>
-    {% if resource.link %}
-    <div class="resource-link">
-      <a href="{{ resource.link }}">{{ resource.link }}</a>
-    </div>
-    {% endif %}
-    {% if resource.file %}
-    <div class="resource-file">
-      <a href="{{ resource.file }}">{{ resource.file.name|basename }}</a>
-    </div>
-    {% endif %}
-  </div>
-</div>
-
-{% endblock resource_content %}
-
-{% block tools %}
-<a id="delete" href="#">Delete resource</a>
-<a href="{% url 'courses:edit_resource' resource.id %}">Edit resource</a>
-{% endblock tools %}
-
-{% block js %}
-
-$(document).ready(function(){
-
-    $('#delete').click(function(){
-	if (confirm('Delete resource?')){
-	    var delete_return = $.post('{% url 'courses:delete_resource' %}',
-		   {id: {{ resource.id }}},
-		   function(data){
-		       window.location = data
-		   });
-	}
-    });
-
-});
-
-{% endblock js %}
+{% block title %}{{ resource.title }}{% endblock %}
+{% block course_breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'courses:resources' course.pk %}">Resources</a></li><li class="breadcrumb-item active">{{ resource.title }}</li>{% endblock %}
+{% block course_actions %}
+{% if is_faculty %}
+<a class="btn btn-outline-secondary" href="{% url 'courses:edit_resource' resource.pk %}"><i class="bi bi-pencil"></i> Edit</a>
+<form method="post" action="{% url 'courses:delete_resource' resource.pk %}" data-confirm="Delete this resource?">{% csrf_token %}<button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button></form>
+{% endif %}
+{% endblock %}
+{% block course_content %}
+<h2 class="h4">{{ resource.title }}</h2>
+<div class="prose mb-3">{{ resource.description|safe }}</div>
+{% if resource.link %}<a class="btn btn-outline-primary" href="{{ resource.link }}" target="_blank" rel="noopener"><i class="bi bi-box-arrow-up-right"></i> Open link</a>{% endif %}
+{% if resource.file %}<a class="btn btn-outline-primary" href="{{ resource.file.url }}"><i class="bi bi-download"></i> {{ resource.file.name|basename }}</a>{% endif %}
+{% endblock %}

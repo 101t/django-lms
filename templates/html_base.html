@@ -1,148 +1,92 @@
-{% load compress static i18n %}
-<!doctype html>
-<!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
-<!--[if lt IE 7 ]> <html class="no-js ie6" lang="en"> <![endif]-->
-<!--[if IE 7 ]>    <html class="no-js ie7" lang="en"> <![endif]-->
-<!--[if IE 8 ]>    <html class="no-js ie8" lang="en"> <![endif]-->
-<!--[if (gte IE 9)|!(IE)]><!--> <html class="no-js" lang="en"> <!--<![endif]-->
+{% load static %}<!doctype html>
+<html lang="en" data-bs-theme="light">
 <head>
-<meta charset="utf-8">
-<meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
-
-<title>{% block title %}{{ "Django-lms: Learning Management System" }}{% endblock title %}</title>
-<meta name="description" content="">
-<meta name="author" content="">
-<meta name="viewport" content="width=device-width, initial-scale=1.0">
-<link rel="shortcut icon" href="{{ STATIC_URL }}images/favicon.ico">
-<link rel="apple-touch-icon" href="{{ STATIC_URL }}images/apple-touch-icon.png">
-<script src="{{ STATIC_URL }}js/libs/modernizr-1.7.min.js"></script>
-
-{% compress css %}
-<link type="text/css" rel="stylesheet" href="{{ STATIC_URL }}css/style.css" charset="utf-8" media="screen, projection">
-{% endcompress %}
-<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/jdMenu.css" type="text/css" />
-<link rel="stylesheet" href="//ajax.googleapis.com/ajax/libs/jqueryui/1.7/themes/smoothness/jquery-ui.css">
-{% block extra_head %}{% endblock extra_head %}
-{% block css %}{% endblock css %}
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>{% block title %}Home{% endblock %} · {{ SITE_NAME }}</title>
+  <link rel="icon" href="{% static 'favicon.svg' %}" type="image/svg+xml">
+  <script>document.documentElement.dataset.bsTheme = localStorage.getItem("theme") || (matchMedia("(prefers-color-scheme: dark)").matches ? "dark" : "light");</script>
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+  <link rel="stylesheet" href="{% static 'css/lms.css' %}">
+  {% block extra_head %}{% endblock %}
 </head>
-<body class="{% block bodyclass %}{% endblock bodyclass %}">
-    <header>
-        <div class="navbar navbar-static-top navbar-inverse">
-            <div class="navbar-inner">
-                <div class="container">
-                    <a class="brand" href="{% url 'springboard:springboard' %}"><img id="logo" src="{{ STATIC_URL }}images/logo.png"></a>
-                    <div class="nav-collapse collapse" id="main-menu">
-                        <div class="auth pull-right">
-                            {% if user.is_authenticated %}
-                                <img class="avatar" src="{{ STATIC_URL }}images/profile-empty-head.gif">
-                                <span class="name"><a href="{% url 'profiles:detail' user %}">{{ user.first_name }} {{ user.last_name }}</a></span><br/>
-                                <span class="links">
-                                    {% if user.is_staff %}<a href="{% url 'admin:index' %}">Admin</a>{% endif %}
-                                    <a href="{% url 'logout' %}">Log Out</a>
-                                </span>
-                            {% else %}
-                                <span class="links">
-                                    <a href="{% url 'login' %}">Log In</a>
-                                </span>
-                            {% endif %}
-                        </div>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </header>
-    <div class="container" id="top-container">    
-        <div class="row">
-            <div id="messages" class="span12">
-                {% if messages %}
-                {% for message in messages %}
-                {% include "django-message.html" %}
-                {% endfor %}
-                {% endif %}
-            </div>
-        </div>
-        <div class="row">
-            <div id="breadcrumbs" class="span12">
-                <ul class="breadcrumb">
-                    <li><a href="/">Home</a></li>{% block breadcrumbs %}{% endblock breadcrumbs %}
-                </ul>
-            </div>
-        </div>
+<body class="{% block bodyclass %}{% endblock %}">
+<a class="visually-hidden-focusable" href="#content">Skip to content</a>
+{% block navbar %}
+<nav class="navbar navbar-expand-lg border-bottom bg-body-tertiary">
+  <div class="container">
+    <a class="navbar-brand fw-semibold" href="/"><i class="bi bi-mortarboard-fill text-primary"></i> {{ SITE_NAME }}</a>
+    {% if user.is_authenticated %}
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav" aria-controls="nav" aria-expanded="false" aria-label="Toggle navigation"><span class="navbar-toggler-icon"></span></button>
+    <div class="collapse navbar-collapse" id="nav">
+      <ul class="navbar-nav me-auto">
+        <li class="nav-item"><a class="nav-link" href="{% url 'courses:drop_page' %}"><i class="bi bi-journal-bookmark"></i> Courses</a></li>
+        <li class="nav-item"><a class="nav-link" href="{% url 'courses:user_calendar' %}"><i class="bi bi-calendar-week"></i> My calendar</a></li>
+      </ul>
+      <ul class="navbar-nav align-items-lg-center gap-lg-2">
+        <li class="nav-item">
+          <a class="nav-link position-relative" href="{% url 'alerts:list' %}" aria-label="Alerts">
+            <i class="bi bi-bell"></i>{% if alert_count %} <span class="badge rounded-pill text-bg-danger">{{ alert_count }}</span>{% endif %}
+          </a>
+        </li>
+        <li class="nav-item">
+          <button class="btn btn-link nav-link" type="button" id="theme-toggle" aria-label="Toggle dark mode"><i class="bi bi-circle-half"></i></button>
+        </li>
+        <li class="nav-item dropdown">
+          <a class="nav-link dropdown-toggle" href="#" role="button" data-bs-toggle="dropdown" aria-expanded="false">
+            <i class="bi bi-person-circle"></i> {{ user.get_full_name|default:user.username }}
+          </a>
+          <ul class="dropdown-menu dropdown-menu-end">
+            <li><a class="dropdown-item" href="{% url 'profiles:detail' user.username %}">My profile</a></li>
+            <li><a class="dropdown-item" href="{% url 'profiles:preference_edit' user.username %}">Preferences</a></li>
+            <li><a class="dropdown-item" href="{% url 'password_change' %}">Change password</a></li>
+            {% if user.is_staff %}<li><hr class="dropdown-divider"></li><li><a class="dropdown-item" href="{% url 'admin:index' %}">Administration</a></li>{% endif %}
+            <li><hr class="dropdown-divider"></li>
+            <li><form method="post" action="{% url 'logout' %}">{% csrf_token %}<button class="dropdown-item" type="submit">Sign out</button></form></li>
+          </ul>
+        </li>
+      </ul>
     </div>
-    <div class="container" id="main">
-        <div class="row">
-            {% block aside %}
-            <div class="span3">
-                <aside>
-                    <nav>
-                        <ul class="nav">
-                            {% block menu %}{% endblock menu %}
-                        </ul>
-                    </nav>
-                </aside>
-            </div>
-            {% endblock aside %}
-            <div {% block content_attributes %}class="span9" id="content-wrapper"{% endblock %}>
-                <div id="content">
-	                {% block content %}{% endblock content %}
-                </div>
-	        </div>
-      </div>
-</div>
-<script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.1/jquery.min.js"></script>
-<script>window.jQuery || document.write("<script src='{{ STATIC_URL }}/js/libs/jquery-1.7.1.min.js'>\x3C/script>")</script>
-<script src="//ajax.googleapis.com/ajax/libs/jqueryui/1.8.16/jquery-ui.min.js"></script>
-<script src="{{ STATIC_URL }}/js/libs/jquery.jdMenu.packed.js"></script>
-{% if TYPEKIT_URL %}
-<script type="text/javascript" src="{{ TYPEKIT_URL }}"></script>
-<script type="text/javascript">try{Typekit.load();}catch(e){}</script>
-{% endif %}
-<!--[if lt IE 7 ]>
-<script src="js/libs/dd_belatedpng.js"></script>
-<script>DD_belatedPNG.fix("img, .png_bg"); // Fix any <img> or .png_bg bg-images. Also, please read goo.gl/mZiyb </script>
-<![endif]-->
-<script type="text/javascript" src="{{ STATIC_URL }}js/libs/bootstrap/bootstrap-alert-fixed.js"></script>
-{% block extra_libraries %}{% endblock extra_libraries %}
-<script>
-var _gaq=[["_setAccount","UA-XXXXX-X"],["_trackPageview"]];
-(function(d,t){var g=d.createElement(t),s=d.getElementsByTagName(t)[0];g.async=1;
-g.src=("https:"==location.protocol?"//ssl":"//www")+".google-analytics.com/ga.js";
-s.parentNode.insertBefore(g,s)}(document,"script"));
-</script>
-<script>
-$('html').ajaxSend(function(event, xhr, settings) {
-    function getCookie(name) {
-        var cookieValue = null;
-        if (document.cookie && document.cookie != '') {
-            var cookies = document.cookie.split(';');
-            for (var i = 0; i < cookies.length; i++) {
-                var cookie = jQuery.trim(cookies[i]);
-                // Does this cookie string begin with the name we want?
-                if (cookie.substring(0, name.length + 1) == (name + '=')) {
-                    cookieValue = decodeURIComponent(cookie.substring(name.length + 1));
-                    break;
-                }
-            }
-        }
-        return cookieValue;
-    }
-    if (!(/^http:.*/.test(settings.url) || /^https:.*/.test(settings.url))) {
-        // Only send the token to relative URLs i.e. locally.
-        xhr.setRequestHeader("X-CSRFToken", getCookie('csrftoken'));
-    }
-});
+    {% endif %}
+  </div>
+</nav>
+{% endblock %}
 
-$(document).ready(function(){
-    $('ul.jd_menu').jdMenu();
-    $('.alert').alert();
-    $('.alert').bind('close', function(){
-        $.post('{% url 'alerts:acknowledge' %}', {pk: $(this).data('id')});
-    });
-});
-$(document).bind('click', function() {
-    $('ul.jd_menu ul:visible').jdMenuHide();
-});
-{% block js %}{% endblock js %}
+<main class="container py-4" id="content">
+  {% block breadcrumb_bar %}
+  <nav aria-label="breadcrumb">
+    <ol class="breadcrumb small">
+      <li class="breadcrumb-item"><a href="/">Home</a></li>
+      {% block breadcrumbs %}{% endblock %}
+    </ol>
+  </nav>
+  {% endblock %}
+
+  {% for message in messages %}
+  <div class="alert alert-{% if message.tags == 'error' %}danger{% else %}{{ message.tags|default:'info' }}{% endif %} alert-dismissible fade show" role="alert">
+    {{ message }}
+    <button type="button" class="btn-close" data-bs-dismiss="alert" aria-label="Close"></button>
+  </div>
+  {% endfor %}
+
+  {% block content %}{% endblock %}
+</main>
+
+<footer class="container py-4 text-body-secondary small border-top">
+  Powered by <a href="https://github.com/101t/django-lms" class="link-secondary">Django LMS</a>
+</footer>
+
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+<script>
+  document.getElementById("theme-toggle")?.addEventListener("click", () => {
+    const next = document.documentElement.dataset.bsTheme === "dark" ? "light" : "dark";
+    document.documentElement.dataset.bsTheme = next;
+    localStorage.setItem("theme", next);
+  });
+  document.querySelectorAll("form[data-confirm]").forEach(form =>
+    form.addEventListener("submit", event => { if (!confirm(form.dataset.confirm)) event.preventDefault(); }));
 </script>
+{% block scripts %}{% endblock %}
 </body>
 </html>

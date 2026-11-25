@@ -1,0 +1,20 @@
+{% load util %}
+{% if form.non_field_errors %}<div class="alert alert-danger">{{ form.non_field_errors|join:" " }}</div>{% endif %}
+{% for field in form.hidden_fields %}{{ field }}{% endfor %}
+{% for field in form.visible_fields %}
+{% with kind=field|widget_kind %}
+<div class="mb-3">
+  {% if kind == "check" %}
+  <div class="form-check">
+    {{ field|bs }}
+    <label class="form-check-label" for="{{ field.id_for_label }}">{{ field.label }}</label>
+  </div>
+  {% else %}
+  <label class="form-label{% if field.field.required %} required{% endif %}" {% if kind != "radio" %}for="{{ field.id_for_label }}"{% endif %}>{{ field.label }}</label>
+  {% if kind == "radio" %}<div class="radio-group">{{ field|bs }}</div>{% else %}{{ field|bs }}{% endif %}
+  {% endif %}
+  {% if field.help_text %}<div class="form-text">{{ field.help_text|safe }}</div>{% endif %}
+  {% for error in field.errors %}<div class="invalid-feedback d-block">{{ error }}</div>{% endfor %}
+</div>
+{% endwith %}
+{% endfor %}

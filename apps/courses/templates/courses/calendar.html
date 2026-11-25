@@ -1,22 +1,18 @@
 {% extends "html_base.html" %}
-{% load breadcrumbs %}
-
-{% block breadcrumbs %}
-{% breadcrumb_url "{{ semester }}" courses:by_semester semester.id %}
-{% breadcrumb "Calendar" %}
-{% endblock breadcrumbs %}
-
-{% block title %}{{ course.title }}{% endblock title %}
-
-{% block aside %}
-{% endblock %}
-{% block content_attributes %}class="span12"{% endblock %}
-
+{% block title %}{% if user_cal %}My calendar{% else %}Course calendar{% endif %}{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item active">{% if user_cal %}My calendar{% else %}Course calendar{% endif %}</li>{% endblock %}
 {% block content %}
-<h1>Calendar</h1>
-{% for calendar in calendars %}
-  <div class="calendar">
-    {{ calendar|safe }}  
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h2 mb-0">{% if user_cal %}My calendar{% else %}All courses{% endif %}{% if semester %} · {{ semester }}{% endif %}</h1>
+  {% if semesters %}
+  <div class="dropdown">
+    <button class="btn btn-outline-secondary dropdown-toggle" data-bs-toggle="dropdown">Semester</button>
+    <ul class="dropdown-menu dropdown-menu-end">
+      {% for s in semesters %}<li><a class="dropdown-item{% if s == semester %} active{% endif %}" href="{% if user_cal %}{% url 'courses:user_calendar' s.pk %}{% else %}{% url 'courses:calendar' s.pk %}{% endif %}">{{ s }}</a></li>{% endfor %}
+    </ul>
   </div>
-{% endfor %}
-{% endblock content %}
+  {% endif %}
+</div>
+{% for month in calendars %}<div class="table-responsive mb-4">{{ month }}</div>
+{% empty %}<p class="text-body-secondary">Nothing scheduled.</p>{% endfor %}
+{% endblock %}

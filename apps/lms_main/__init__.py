@@ -1,2 +1,1 @@
-# -*- coding: utf-8 -*-
-default_app_config = 'apps.lms_main.apps.LMSMainConfig'
+default_app_config = "apps.lms_main.apps.LMSMainConfig"

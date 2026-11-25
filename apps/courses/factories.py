@@ -1,62 +1,65 @@
+from datetime import date, time, timedelta
+
 import factory
-from datetime import datetime, timedelta, time
-from django.contrib.auth.models import User, Group
-from .models import Course, CourseEvent, Semester, Assignment
+from django.contrib.auth.models import Group, User
+
+from .models import Assignment, Course, CourseEvent, Semester
 
 
-class SemesterFactory(factory.Factory):
-	FACTORY_FOR = Semester
+class SemesterFactory(factory.django.DjangoModelFactory):
+	class Meta:
+		model = Semester
 
-	name = 'Fall'
-	year = str(datetime.now().year)
-	start = datetime.now().date() - timedelta(days=30)
-	end = datetime.now().date() + timedelta(days=30)
-
-
-class CourseFactory(factory.Factory):
-	FACTORY_FOR = Course
-
-	title = 'Test Title'
-	section = '001'
-	number = '101'
-	description = 'Test Course<br>It is a test.'
-	semester = factory.LazyAttribute(lambda a: SemesterFactory())
-	campus = 'main'
-	location = '543'
+	name = "Fall"
+	year = factory.LazyFunction(lambda: date.today().year)
+	start = factory.LazyFunction(lambda: date.today() - timedelta(days=30))
+	end = factory.LazyFunction(lambda: date.today() + timedelta(days=30))
 
 
-class EventFactory(factory.Factory):
-	FACTORY_FOR = CourseEvent
+class CourseFactory(factory.django.DjangoModelFactory):
+	class Meta:
+		model = Course
 
-	course = factory.LazyAttribute(lambda a: CourseFactory())
-	title = 'Lecture'
+	title = "Test Title"
+	section = "001"
+	number = "101"
+	description = "Test Course<br>It is a test."
+	semester = factory.SubFactory(SemesterFactory)
+	campus = "main"
+	location = "543"
+
+
+class EventFactory(factory.django.DjangoModelFactory):
+	class Meta:
+		model = CourseEvent
+
+	course = factory.SubFactory(CourseFactory)
+	title = "Lecture"
 	start = time(9, 0)
 	end = time(11, 0)
 	recurrences = "RRULE:FREQ=WEEKLY;BYDAY=TU,TH"
 
 
-class AssignmentFactory(factory.Factory):
-	FACTORY_FOR = Assignment
+class AssignmentFactory(factory.django.DjangoModelFactory):
+	class Meta:
+		model = Assignment
 
-	title = factory.Sequence(lambda n: 'Assignment {0}'.format(n))
-	description = '<strong>Bold</strong> Assignment.'
-	due_date = datetime.now().date() + timedelta(days=7)
+	course = factory.SubFactory(CourseFactory)
+	title = factory.Sequence(lambda n: f"Assignment {n}")
+	description = "<strong>Bold</strong> Assignment."
+	due_date = factory.LazyFunction(lambda: date.today() + timedelta(days=7))
 
 
-class FacultyFactory(factory.Factory):
-	FACTORY_FOR = User
+class FacultyFactory(factory.django.DjangoModelFactory):
+	class Meta:
+		model = User
 
-	username = factory.Sequence(lambda n: 'faculty{0}'.format(n))
-	email = factory.Sequence(lambda n: 'faculty{0}@example.com'.format(n))
-	first_name = factory.Sequence(lambda n: 'faculty{0}'.format(n))
-	last_name = 'smith'
+	username = factory.Sequence(lambda n: f"faculty{n}")
+	email = factory.Sequence(lambda n: f"faculty{n}@example.com")
+	first_name = factory.Sequence(lambda n: f"faculty{n}")
+	last_name = "smith"
 
-	@classmethod
-	def _prepare(cls, create, **kwargs):
-		user = super(FacultyFactory, cls)._prepare(create, **kwargs)
-
+	@factory.post_generation
+	def faculty_group(self, create, extracted, **kwargs):
 		if create:
-			group, created = Group.objects.get_or_create(name='Faculty')
-			user.groups.add(group)
-
-		return user
+			self.groups.add(Group.objects.get_or_create(name="Faculty")[0])

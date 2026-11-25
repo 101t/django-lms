@@ -1,46 +1,30 @@
 {% extends "html_base.html" %}
-{% load breadcrumbs %}
-{% block breadcrumbs %}
-{% breadcrumb "{{ semester }}" %}
-{% endblock breadcrumbs %}
-
-{% block title %}{{ semester }}{% endblock title %}
-{% block menu %}
-  <li><a href="{% url 'courses:calendar' semester.id %}">Calendar</a></li>
-  <li><a href="{% url 'courses:user_calendar' semester.id %}">My Courses Calendar</a></li>
-  <li><a href="{% url 'courses:semester_list' %}">Browse Semesters</a></li>
-  
-  {% if 'Admissions' in groups %}<li class="right"><a href="{% url 'admin:courses_course_changelist' %}">Admin Courses</a></li>{% endif %}
-{% endblock menu %}
-
+{% block title %}{{ semester }}{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'courses:semester_list' %}">Semesters</a></li><li class="breadcrumb-item active">{{ semester }}</li>{% endblock %}
 {% block content %}
-<section id="course-list">
-  <h1>Courses for {{ semester }}</h1>
-  <table class="table table-striped full-section table-hover">
-    <thead>
-      <tr>
-	<th class="course-number">Number</th>
-	<th class="course-section">Section</th>
-	<th class="course-title">Title</th>
-	<th class="course-times">Times</th>
-	<th class="course-instructor">Instructor</th>
-      </tr>
-    </thead>
-    <tbody>
-      {% for course in courses %}
-      <tr class="course-list-entry {% cycle 'even' 'odd' %}">
-        <td class="course-number">{{ course.number }}</td>
-        <td class="course-section">{{ course.section }}</td>
-        <td class="course-title"><a href="{% url 'courses:overview' course.id %}">{{ course.title }}</a></td>
-        <td class="course-times">
-          {% for event in course.schedule.all %}
-            {{ event.readable|safe }}
-          {% endfor %}
-        </td>
-        <td class="course-instructor">{{ course.faculty.all|join:", " }}</td>
-      </tr>
-      {% endfor %}
-    </tbody>
-  </table>
-</section>
-{% endblock content %}
+<div class="d-flex flex-wrap justify-content-between align-items-center gap-2 mb-3">
+  <h1 class="h2 mb-0">Courses · {{ semester }}</h1>
+  <div class="d-flex gap-2">
+    <a class="btn btn-outline-secondary" href="{% url 'courses:calendar' semester.pk %}"><i class="bi bi-calendar3"></i> Calendar</a>
+    <a class="btn btn-outline-secondary" href="{% url 'courses:user_calendar' semester.pk %}"><i class="bi bi-calendar-heart"></i> My calendar</a>
+    {% if perms.courses.add_course %}<a class="btn btn-primary" href="{% url 'admin:courses_course_add' %}"><i class="bi bi-plus-lg"></i> New course</a>{% endif %}
+  </div>
+</div>
+<input class="form-control mb-3" type="search" placeholder="Filter courses…" aria-label="Filter courses" oninput="const q=this.value.toLowerCase();document.querySelectorAll('#courses tbody tr').forEach(r=>r.hidden=!r.textContent.toLowerCase().includes(q))">
+<div class="table-responsive">
+<table class="table table-hover align-middle" id="courses">
+  <thead><tr><th>Course</th><th>Title</th><th>Schedule</th><th>Instructor</th><th>Location</th></tr></thead>
+  <tbody>
+    {% for course in courses %}
+    <tr>
+      <td class="text-nowrap">{{ course.number }}-{{ course.section }}</td>
+      <td><a href="{{ course.get_absolute_url }}">{{ course.title }}</a>{% if course.private %} <i class="bi bi-lock text-body-secondary" title="Private"></i>{% endif %}</td>
+      <td class="small">{% for event in course.schedule.all %}<div>{{ event.start|time:"H:i" }}–{{ event.end|time:"H:i" }} · {{ event.readable|join:"; " }}</div>{% endfor %}</td>
+      <td>{% for person in course.faculty.all %}{{ person.get_full_name|default:person.username }}{% if not forloop.last %}, {% endif %}{% endfor %}</td>
+      <td>{{ course.location }}</td>
+    </tr>
+    {% empty %}<tr><td colspan="5" class="text-body-secondary">No courses this semester.</td></tr>{% endfor %}
+  </tbody>
+</table>
+</div>
+{% endblock %}

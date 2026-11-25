@@ -1,52 +1,33 @@
 {% extends "html_base.html" %}
-{% load i18n %}
-{% load compress %}
-
-{% block css %}
-{% compress css %}
-<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/login.css">
-{% endcompress %}
-{% endblock css %}
-
-{% block bodyclass %}login{% endblock bodyclass %}
-
+{% block title %}Sign in{% endblock %}
+{% block bodyclass %}bg-body-tertiary{% endblock %}
+{% block breadcrumb_bar %}{% endblock %}
 {% block content %}
-<div id="login">
-  <div id="container">
-    <!-- Header --> 
-    <div id="login-header"> 
-      <div id="branding"> 
-        <h1 id="site-name">Login</h1> 
-      </div> 
-    </div> 
-    <!-- END Header --> 
-    <!-- Content --> 
-    <div id="form"> 
-      {% if form.errors %}
-      <div class="error">Your username and password didn't match. Please try again.</div>
-      {% endif %}
-      
-      <div>
-        <form action="{{ app_path }}" method="post" id="login-form">{% csrf_token %}
-	      <div class="form-row">
-	        {% if not form.this_is_the_login_form.errors %}{{ form.username.errors }}{% endif %}
-	        <label for="id_username" class="required">{% trans 'Username:' %}</label> {{ form.username }}
-	      </div>
-	      <div class="form-row">
-	        {% if not form.this_is_the_login_form.errors %}{{ form.password.errors }}{% endif %}
-	        <label for="id_password" class="required">{% trans 'Password:' %}</label> {{ form.password }}
-	        <input type="hidden" name="this_is_the_login_form" value="1" />
-	        <input type="hidden" name="next" value="{{ next }}" />
-	      </div>
-	      <div class="submit-row">
-	        <input type="submit" value="{% trans 'Log in' %}" class="btn btn-primary"/>
-	      </div>
+<div class="row justify-content-center py-5">
+  <div class="col-sm-9 col-md-6 col-lg-4">
+    <div class="text-center mb-4">
+      <i class="bi bi-mortarboard-fill text-primary display-4"></i>
+      <h1 class="h3 mt-2">Sign in to {{ SITE_NAME }}</h1>
+    </div>
+    <div class="card shadow-sm">
+      <div class="card-body p-4">
+        {% if form.errors %}<div class="alert alert-danger">Your username and password didn't match. Please try again.</div>{% endif %}
+        <form method="post">
+          {% csrf_token %}
+          <div class="mb-3">
+            <label class="form-label" for="id_username">Username</label>
+            <input class="form-control" type="text" name="username" id="id_username" autocomplete="username" autofocus required value="{{ form.username.value|default:'' }}">
+          </div>
+          <div class="mb-3">
+            <label class="form-label" for="id_password">Password</label>
+            <input class="form-control" type="password" name="password" id="id_password" autocomplete="current-password" required>
+          </div>
+          <input type="hidden" name="next" value="{{ next }}">
+          <button class="btn btn-primary w-100" type="submit">Sign in</button>
         </form>
-        <script type="text/javascript">
-	      document.getElementById('id_username').focus()
-        </script>
       </div>
     </div>
+    <p class="text-center small mt-3"><a href="{% url 'password_reset' %}">Forgot your password?</a></p>
   </div>
 </div>
 {% endblock %}

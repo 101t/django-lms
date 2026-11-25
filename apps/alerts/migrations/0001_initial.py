@@ -3,7 +3,6 @@
 from django.conf import settings
 from django.db import migrations, models
 import django.db.models.deletion
-import django_extensions.db.fields
 import tinymce.models
 
 
@@ -20,8 +19,8 @@ class Migration(migrations.Migration):
             name='Alert',
             fields=[
                 ('id', models.AutoField(auto_created=True, primary_key=True, serialize=False, verbose_name='ID')),
-                ('created', django_extensions.db.fields.CreationDateTimeField(auto_now_add=True, verbose_name='created')),
-                ('modified', django_extensions.db.fields.ModificationDateTimeField(auto_now=True, verbose_name='modified')),
+                ('created', models.DateTimeField(auto_now_add=True, verbose_name='created')),
+                ('modified', models.DateTimeField(auto_now=True, verbose_name='modified')),
                 ('sent_by', models.CharField(max_length=200)),
                 ('title', models.CharField(max_length=200)),
                 ('details', tinymce.models.HTMLField(blank=True)),

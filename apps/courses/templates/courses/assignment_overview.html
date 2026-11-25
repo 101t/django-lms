@@ -1,91 +1,24 @@
-{% extends "courses/assignment_base.html" %}
-{% load courses %}
-{% load breadcrumbs %}
-{% block breadcrumbs %}
-{% breadcrumb_url "{{ course }}" courses:overview course.id %}
-{% breadcrumb "Assignment Overview" %}
-{% endblock breadcrumbs %}
-
-{% block page_title %}<span class="san-serif">{{ assignment.title }}</span>{% endblock page_title %}
-{% block assignment_content %}
-<div id="assignment">
-  <div class="assignment-overview">
-   <div class="assignment-due-date">{{ assignment.due_date }}</div>
-    <div class="assignment-description">
-      {{ assignment.description|safe }}
-    </div>
-  </div>
-</div>
-
-{% if submissions %}
-  {% ifcoursefaculty %}
-  <h3>All submitted solutions</h3>
-  {% for submission in submissions %}
-    <div class="{% cycle 'odd' 'even' %}">
-      {% include "courses/submission.html" %}
-    </div>
-  {% endfor %}
-  {% else %}
-  <h3>Your submitted solutions</h3>
-  {% for submission in submissions %}
-  <div class="{% cycle 'even' '' %}">
-    <div class="right">
-      <a class="button delete" href="#" id="submission_{{ submission.id }}">Delete</a>
-    </div>
-    <div class="left">
-      {% include "courses/submission.html" %}
-    </div>
-  </div>
-  {% endfor %}
-  {% endifcoursefaculty %}
+{% extends "courses/course_base.html" %}
+{% block title %}{{ assignment.title }}{% endblock %}
+{% block course_breadcrumbs %}<li class="breadcrumb-item"><a href="{% url 'courses:assignments' course.pk %}">Assignments</a></li><li class="breadcrumb-item active">{{ assignment.title }}</li>{% endblock %}
+{% block course_actions %}
+{% if is_member %}
+<a class="btn btn-primary" href="{% url 'courses:submit_assignment' assignment.pk %}"><i class="bi bi-upload"></i> Submit</a>
+<a class="btn btn-outline-primary" href="{% url 'courses:team_submit_assignment' assignment.pk %}"><i class="bi bi-people"></i> Team submit</a>
 {% endif %}
-{% endblock assignment_content %}
+{% if is_faculty %}
+<a class="btn btn-outline-secondary" href="{% url 'courses:edit_assignment' assignment.pk %}"><i class="bi bi-pencil"></i> Edit</a>
+<form method="post" action="{% url 'courses:delete_assignment' assignment.pk %}" data-confirm="Delete this assignment and all its submissions?">{% csrf_token %}<button class="btn btn-outline-danger" type="submit"><i class="bi bi-trash"></i></button></form>
+{% endif %}
+{% endblock %}
+{% block course_content %}
+<h2 class="h4">{{ assignment.title }}</h2>
+{% if assignment.due_date %}<p class="text-body-secondary"><i class="bi bi-calendar-event"></i> Due {{ assignment.due_date|date:"l, F j, Y" }}</p>{% endif %}
+<div class="prose mb-4">{{ assignment.description|safe }}</div>
 
-{% block tools %}
-{% ifcoursefaculty %}<a href="{% url 'courses:edit_assignment' assignment.id %}">Edit assignment</a>{% endifcoursefaculty %}
-{% ifcoursefaculty %}<a id="delete" href="#">Delete assignment</a>{% endifcoursefaculty %}{% ifcoursemember %}<a href="{% url 'courses:submit_assignment' assignment.id %}">Submit solution</a>{% endifcoursemember %}
-{% ifcoursemember %}<a href="{% url 'courses:team_submit_assignment' assignment.id %}">Submit solution for team</a>{% endifcoursemember %}
-{% endblock tools %}
-
-{% block js %}
-
-$(document).ready(function(){
-    {% for submission in submissions %}
-        $('#submission_{{ submission.id }}').data('submission', '{{ submission.id }}');
-    {% endfor %}
-
-    $('.submission .delete').hide();
-    $('.submission').hover(
-	function(){
-	    $('.delete', this).fadeIn(100);
-            $(this).css('background-color', '#d5edf8');
-	},
-	function(){
-	    $('.delete', this).fadeOut(100);
-            $(this).css('background-color', 'transparent');
-	}
-    );
-
-    $('.submission .delete').click(function(){
-	if (confirm('Delete submission?')){
-	    var delete_return = $.post('{% url 'courses:delete_submission' %}',
-		   {id: $(this).data('submission')},
-		   function(data){
-		       window.location = data
-		   });
-	}
-    });
-
-    $('#delete').click(function(){
-	if (confirm('Delete assignment?')){
-	    var delete_return = $.post('{% url 'courses:delete_assignment' %}',
-		   {id:{{ assignment.id }}},
-		   function(data){
-		       window.location = data
-		   });
-	}
-    });
-
-});
-
-{% endblock js %}
+<h3 class="h5">{% if is_faculty %}All submissions{% else %}Your submissions{% endif %} <span class="badge text-bg-secondary">{{ submissions|length }}</span></h3>
+<div class="list-group">
+  {% for submission in submissions %}{% include "courses/submission.html" %}
+  {% empty %}<div class="text-body-secondary">No submissions yet.</div>{% endfor %}
+</div>
+{% endblock %}

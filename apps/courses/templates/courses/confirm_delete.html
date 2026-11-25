@@ -1,0 +1,11 @@
+{% extends "courses/course_base.html" %}
+{% block course_content %}
+<div class="card border-danger" style="max-width: 32rem"><div class="card-body">
+  <h2 class="h5">Delete “{{ object }}”?</h2>
+  <p>This cannot be undone.</p>
+  <form method="post">{% csrf_token %}
+    <button class="btn btn-danger" type="submit">Delete</button>
+    <a class="btn btn-link" href="javascript:history.back()">Cancel</a>
+  </form>
+</div></div>
+{% endblock %}

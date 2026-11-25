@@ -2,39 +2,37 @@ from calendar import HTMLCalendar
 from datetime import date
 
 from django.urls import reverse
+from django.utils.html import escape
 
 
 class HTMLCourseCalendar(HTMLCalendar):
-	def __init__(self, events, *args, **kwargs):
+	"""Month tables with each day's course events. `events` maps date -> [(occurrence, CourseEvent)]."""
+
+	cssclass_month = "table table-bordered course-calendar mb-0"
+
+	def __init__(self, events, user_cal=False):
+		super().__init__(firstweekday=6)
 		self.events = events
-		self.user_cal = kwargs.pop('user_cal', False)
+		self.user_cal = user_cal
 
-		return super(HTMLCourseCalendar, self).__init__(*args, **kwargs)
-
-	def formatmonth(self, year, month):
+	def formatmonth(self, year, month, withyear=True):
 		self.year, self.month = year, month
-		return super(HTMLCourseCalendar, self).formatmonth(year, month)
-
-	def day_cell(self, cssclass, body):
-		return '<td class="%s"><div class="day">%s</div></td>' % (cssclass, body)
+		return super().formatmonth(year, month, withyear)
 
 	def formatday(self, day, weekday):
-		if day != 0:
-			cssclass = self.cssclasses[weekday]
-			if date.today() == date(self.year, self.month, day):
-				cssclass += ' today'
-			if day in self.events.get(self.month, []):
-				cssclass += ' filled'
-				body = []
-				if self.user_cal:
-					day_link = reverse('courses:user_calendar_day',
-					                   kwargs={'year': self.year, 'month': self.month, 'day': day})
-				else:
-					day_link = reverse('courses:calendar_day',
-					                   kwargs={'year': self.year, 'month': self.month, 'day': day})
-				for event in self.events[self.month][day]:
-					body.append('{} {}<br>'.format(event[1].start.isoformat(), event[1].course.full_title()))
-				return self.day_cell(cssclass, '<div class="dayNumber"><a href="%s">%d</a></div> %s' % (
-					day_link, day, ''.join(body)))
-			return self.day_cell(cssclass, '<div class="dayNumber">%d</div>' % day)
-		return self.day_cell('noday', '&nbsp;')
+		if day == 0:
+			return '<td class="noday"></td>'
+		current = date(self.year, self.month, day)
+		classes = [self.cssclasses[weekday]] + (["today"] if current == date.today() else [])
+		events = self.events.get(current)
+		if not events:
+			return f'<td class="{" ".join(classes)}"><span class="day-number">{day}</span></td>'
+
+		name = "courses:user_calendar_day" if self.user_cal else "courses:calendar_day"
+		url = reverse(name, kwargs={"year": self.year, "month": self.month, "day": day})
+		items = "".join(
+			f'<div class="event text-truncate"><span class="text-body-secondary">{event.start:%H:%M}</span> '
+			f"{escape(event.course.full_title())}</div>"
+			for _, event in events
+		)
+		return f'<td class="{" ".join(classes)} filled"><a class="day-number" href="{url}">{day}</a>{items}</td>'

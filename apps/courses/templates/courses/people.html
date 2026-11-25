@@ -1,0 +1,8 @@
+<ul class="list-group">
+  {% for person in people %}
+  <li class="list-group-item d-flex align-items-center gap-2">
+    <i class="bi bi-person-circle text-body-secondary"></i>
+    <a href="{% url 'profiles:detail' person.username %}">{{ person.get_full_name|default:person.username }}</a>
+  </li>
+  {% empty %}<li class="list-group-item text-body-secondary">Nobody yet.</li>{% endfor %}
+</ul>

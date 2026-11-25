@@ -1,69 +1,44 @@
-from django.urls import re_path as url
-from apps.courses.views import (CourseOverview,
-                                CourseCalendar,
-                                CourseCalendarDay,
-                                UserCourseCalendar,
-                                UserCourseCalendarDay,
-                                BySemesterList,
-                                SemesterList,
-                                CourseDropPage,
-                                CourseAdmin,
-                                ToggleMembership,
-                                NewCourseAssignment,
-                                AssignmentList,
-                                AssignmentOverview,
-                                SubmitAssignment,
-                                TeamSubmitAssignment,
-                                DeleteSubmission,
-                                CourseMembers,
-                                ResourceList,
-                                ResourceDetails,
-                                NewCourseResource,
-                                EditResource,
-                                EditAssignment,
-                                DeleteResource,
-                                DeleteAssignment)
 from django.contrib.auth.decorators import login_required
+from django.urls import path
+
+from . import views
 
 app_name = "courses"
 
+
+def route(pattern, view, name):
+	return path(pattern, login_required(view.as_view()), name=name)
+
+
 urlpatterns = [
-	url(r'^$', login_required(CourseDropPage.as_view()), name='drop_page'),
-	url(r'^(?P<pk>\w+)/overview/$', login_required(CourseOverview.as_view()), name='overview'),
-	url(r'^semester/browse/$', login_required(SemesterList.as_view()), name='semester_list'),
-	url(r'^semester/(?P<pk>\w+)/$', login_required(BySemesterList.as_view()), name='by_semester'),
-
-	url(r'^(?P<pk>\w+)/members/$', login_required(CourseMembers.as_view()), name='members'),
-	url(r'^(?P<pk>\w+)/admin/$', login_required(CourseAdmin.as_view()), name='admin'),
-	url(r'^(?P<pk>\w+)/toggle-membership/$', login_required(ToggleMembership.as_view()), name='toggle-membership'),
-
+	route("", views.CourseDropPage, "drop_page"),
+	route("semester/browse/", views.SemesterList, "semester_list"),
+	route("semester/<int:pk>/", views.BySemesterList, "by_semester"),
+	# Course
+	route("<int:pk>/overview/", views.CourseOverview, "overview"),
+	route("<int:pk>/members/", views.CourseMembers, "members"),
+	route("<int:pk>/admin/", views.CourseAdmin, "admin"),
+	route("<int:pk>/toggle-membership/", views.ToggleMembership, "toggle-membership"),
 	# Resources
-	url(r'^resources/(?P<pk>\w+)/details/$', login_required(ResourceDetails.as_view()), name='resource_details'),
-	url(r'^resources/(?P<pk>\w+)/edit/$', login_required(EditResource.as_view()), name='edit_resource'),
-	url(r'^(?P<pk>\w+)/resources/create/$', login_required(NewCourseResource.as_view()), name='resource_create'),
-	url(r'^(?P<pk>\w+)/resources/$', login_required(ResourceList.as_view()), name='resources'),
-	url(r'^resources/delete/$', login_required(DeleteResource.as_view()), name='delete_resource'),
-
+	route("<int:pk>/resources/", views.ResourceList, "resources"),
+	route("<int:pk>/resources/create/", views.NewCourseResource, "resource_create"),
+	route("resources/<int:pk>/details/", views.ResourceDetails, "resource_details"),
+	route("resources/<int:pk>/edit/", views.EditResource, "edit_resource"),
+	route("resources/<int:pk>/delete/", views.DeleteResource, "delete_resource"),
 	# Assignments
-	url(r'^assignment/delete/$', login_required(DeleteAssignment.as_view()), name='delete_assignment'),
-	url(r'^(?P<pk>\w+)/assignments/new/$', login_required(NewCourseAssignment.as_view()), name='new_assignment'),
-	url(r'^(?P<pk>\w+)/assignments/$', login_required(AssignmentList.as_view()), name='assignments'),
-	url(r'^assignment/(?P<pk>\w+)/overview/$', login_required(AssignmentOverview.as_view()), name='assignment_overview'),
-	url(r'^(?P<pk>\w+)/assignments/submit/$', login_required(SubmitAssignment.as_view()), name='submit_assignment'),
-	url(r'^assignment/(?P<pk>\w+)/edit/$', login_required(EditAssignment.as_view()), name='edit_assignment'),
-	url(r'^(?P<pk>\w+)/assignments/team_submit/$', login_required(TeamSubmitAssignment.as_view()),
-	    name='team_submit_assignment'),
-	url(r'^assignment_submission/delete/$', login_required(DeleteSubmission.as_view()), name='delete_submission'),
-
-	# Schedule
-	url(r'^calendar/$', login_required(CourseCalendar.as_view()), name='calendar'),
-	url(r'^calendar/(?P<semester>\d+)/$', login_required(CourseCalendar.as_view()), name='calendar'),
-	url(r'^calendar/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', login_required(CourseCalendarDay.as_view()),
-	    name='calendar_day'),
-
-	# Schedule
-	url(r'^user_calendar/$', login_required(UserCourseCalendar.as_view()), name='user_calendar'),
-	url(r'^user_calendar/(?P<semester>\d+)/$', login_required(UserCourseCalendar.as_view()), name='user_calendar'),
-	url(r'^user_calendar/(?P<year>\d+)/(?P<month>\d+)/(?P<day>\d+)/$', login_required(UserCourseCalendarDay.as_view()),
-	    name='user_calendar_day'),
+	route("<int:pk>/assignments/", views.AssignmentList, "assignments"),
+	route("<int:pk>/assignments/new/", views.NewCourseAssignment, "new_assignment"),
+	route("assignment/<int:pk>/overview/", views.AssignmentOverview, "assignment_overview"),
+	route("assignment/<int:pk>/edit/", views.EditAssignment, "edit_assignment"),
+	route("assignment/<int:pk>/delete/", views.DeleteAssignment, "delete_assignment"),
+	route("assignment/<int:pk>/submit/", views.SubmitAssignment, "submit_assignment"),
+	route("assignment/<int:pk>/team_submit/", views.TeamSubmitAssignment, "team_submit_assignment"),
+	route("assignment_submission/<int:pk>/delete/", views.DeleteSubmission, "delete_submission"),
+	# Calendars
+	route("calendar/", views.CourseCalendar, "calendar"),
+	route("calendar/<int:semester>/", views.CourseCalendar, "calendar"),
+	route("calendar/<int:year>/<int:month>/<int:day>/", views.CourseCalendarDay, "calendar_day"),
+	route("user_calendar/", views.UserCourseCalendar, "user_calendar"),
+	route("user_calendar/<int:semester>/", views.UserCourseCalendar, "user_calendar"),
+	route("user_calendar/<int:year>/<int:month>/<int:day>/", views.UserCourseCalendarDay, "user_calendar_day"),
 ]

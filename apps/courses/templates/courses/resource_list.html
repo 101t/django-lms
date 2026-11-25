@@ -1,21 +1,12 @@
-{% extends "courses/resource_base.html" %}
-{% load breadcrumbs %}
-
-{% block breadcrumbs %}
-{% breadcrumb_url "{{ course }}" courses:overview course.id %}
-{% breadcrumb "Resources" %}
-{% endblock breadcrumbs %}
-
-{% block resource_content %}
-<div id="resource-list">
-    {% for resource in resources %}
-    <div class="resource-overview">
-	<div class="resource-title san-serif"><a href="{% url 'courses:resource_details' resource.id %}">{{ resource.title }}</a></div>
-     <div class="resource-description">
-	{{ resource.description|safe|truncatewords_html:100 }}
-      </div>
-    </div>
-    {% endfor %}
+{% extends "courses/course_base.html" %}
+{% block course_breadcrumbs %}<li class="breadcrumb-item active">Resources</li>{% endblock %}
+{% block course_actions %}{% if is_faculty %}<a class="btn btn-primary" href="{% url 'courses:resource_create' course.pk %}"><i class="bi bi-plus-lg"></i> Add resource</a>{% endif %}{% endblock %}
+{% block course_content %}
+<div class="list-group">
+  {% for resource in resources %}
+  <a class="list-group-item list-group-item-action" href="{{ resource.get_absolute_url }}">
+    <i class="bi {% if resource.file %}bi-paperclip{% else %}bi-link-45deg{% endif %} me-2"></i>{{ resource.title }}
+  </a>
+  {% empty %}<div class="text-body-secondary">No resources yet.</div>{% endfor %}
 </div>
-{% endblock resource_content %}
-
+{% endblock %}

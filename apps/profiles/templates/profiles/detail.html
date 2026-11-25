@@ -1,45 +1,27 @@
 {% extends "html_base.html" %}
 {% load util %}
-{% block title %}Profile for {{ profile.user }}{% endblock title %}
-
-{% block aside %}
-{% endblock %}
-{% block content_attributes %}class="span12"{% endblock %}
-
+{% block title %}{{ profile }}{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item active">{{ profile }}</li>{% endblock %}
 {% block content %}
-
-<div class="row profile-detail">
-  <div class="span2 profile-image">
-  {% if profile.mugshot %}
-    <img src="{{ profile.mugshot.url }}" alt="profile image">
-  {% else %}
-    <img src="{{ STATIC_URL}}images/profile-empty-head.gif" alt="profile image">
-  {% endif %}
- </div>
-  <div class="span10 profile-text">
-    <h1>Profile for {{ profile.user.get_full_name }}  {% if profile.user == request.user %}
-      <a href="{% url 'profiles:edit' profile.user %}" class="btn btn-primary edit-button">Edit</a>
-  {% endif %}
-    </h1>
-    {% if profile.is_alum %}
-      Alumni<br>      
-    {% endif %}    
-    {% if profile.user.userdegree_set.all.count > 0 %}
-      {% for degree in profile.user.userdegree_set.all %}
-        {{ degree }}<br>
-      {% endfor %}
-    {% endif %}    
-    {% if profile.data.biography %}
-    <h3>Biography</h3>
-    <p>{{ profile.data.biography|safe }}</p>
-    {% endif %}
-    {% if profile.resume %}
-    <h3>Resume</h3>
-    <p><a href="{{ profile.resume.url }}">{{ profile.resume.name|basename }}</a>
-    {% endif %}
-      {% if profile.user == request.user %}
-      {% include "profiles/socialauths.html" %}
-      {% endif %}
+<div class="row g-4">
+  <div class="col-md-4">
+    <div class="card text-center"><div class="card-body">
+      {% if profile.mugshot %}<img class="avatar rounded-circle mb-3" src="{{ profile.mugshot.url }}" alt="">
+      {% else %}<i class="bi bi-person-circle display-1 text-body-secondary"></i>{% endif %}
+      <h1 class="h4">{{ profile }}</h1>
+      <div class="text-body-secondary">@{{ profile.user.username }}</div>
+      {% if profile.is_alum %}<span class="badge text-bg-info mt-2">Alumni</span>{% endif %}
+      {% for degree in degrees %}<div class="small mt-1">{{ degree }}</div>{% endfor %}
+      {% if profile.resume %}<a class="btn btn-sm btn-outline-secondary mt-3" href="{{ profile.resume.url }}"><i class="bi bi-file-earmark-person"></i> Résumé</a>{% endif %}
+      {% if profile.user == user %}<div class="mt-3"><a class="btn btn-sm btn-primary" href="{% url 'profiles:edit' user.username %}"><i class="bi bi-pencil"></i> Edit profile</a></div>{% endif %}
+    </div></div>
+  </div>
+  <div class="col-md-8">
+    {% if profile.biography %}<div class="prose mb-4">{{ profile.biography|safe }}</div>{% endif %}
+    {% if teaching %}<h2 class="h5">Teaching</h2>
+    <div class="list-group mb-4">{% for course in teaching %}<a class="list-group-item list-group-item-action" href="{{ course.get_absolute_url }}">{{ course.full_title }} <span class="text-body-secondary small">· {{ course.semester }}</span></a>{% endfor %}</div>{% endif %}
+    {% if enrolled %}<h2 class="h5">Courses</h2>
+    <div class="list-group">{% for course in enrolled %}<a class="list-group-item list-group-item-action" href="{{ course.get_absolute_url }}">{{ course.full_title }} <span class="text-body-secondary small">· {{ course.semester }}</span></a>{% endfor %}</div>{% endif %}
   </div>
 </div>
-{% endblock content %}
+{% endblock %}

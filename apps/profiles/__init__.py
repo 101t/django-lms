@@ -1,2 +1,1 @@
-# -*- coding: utf-8 -*-
-default_app_config = 'apps.profiles.apps.ProfilesConfig'
+default_app_config = "apps.profiles.apps.ProfilesConfig"

@@ -1,20 +1,9 @@
 {% extends "courses/course_base.html" %}
-{% load courses %}
-{% load breadcrumbs %}
-
-{% block breadcrumbs %}
-{% breadcrumb_url "{{ course }}" courses:overview course.id %}
-{% breadcrumb "Members" %}
-{% endblock breadcrumbs %}
-
+{% block course_breadcrumbs %}<li class="breadcrumb-item active">People</li>{% endblock %}
 {% block course_content %}
-<div id="course">
-  <span class="course-sub-info">{{ course.number }} - {{ course.section }}: {{ course.semester.name }} {{ course.semester.year }}</span>
- 
-  <div id="members">
-   {% for person in course.members.all %}
-     {% include "person_box.html" %}
-   {% endfor %}
-  </div>
+<div class="row g-4">
+  <div class="col-md-4"><h2 class="h5">Faculty</h2>{% include "courses/people.html" with people=course.faculty.all %}</div>
+  <div class="col-md-4"><h2 class="h5">Teaching assistants</h2>{% include "courses/people.html" with people=course.teaching_assistants.all %}</div>
+  <div class="col-md-4"><h2 class="h5">Students <span class="badge text-bg-secondary">{{ course.members.count }}</span></h2>{% include "courses/people.html" with people=course.members.all %}</div>
 </div>
-{% endblock course_content %}
+{% endblock %}

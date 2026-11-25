@@ -1,5 +1,5 @@
-from django.test import TestCase
 from django.contrib.auth.models import User
+from django.test import TestCase
 from django.utils import timezone
 
 from apps.courses.factories import CourseFactory, FacultyFactory, SemesterFactory
@@ -14,7 +14,7 @@ class TasksTest(TestCase):
 
 		current_semester = SemesterFactory.create(end=timezone.now().date() - timezone.timedelta(days=1))
 
-		self.assertEquals(current_semester, get_yesterday_semester())
+		self.assertEqual(current_semester, get_yesterday_semester())
 
 	def test_disable_faculty(self):
 		"""
@@ -25,14 +25,15 @@ class TasksTest(TestCase):
 		current_semester = SemesterFactory.create(end=timezone.now().date() - timezone.timedelta(days=1))
 		next_semester = SemesterFactory.create(
 			start=timezone.now().date() + timezone.timedelta(days=60),
-			end=timezone.now().date() + timezone.timedelta(days=90))
+			end=timezone.now().date() + timezone.timedelta(days=90),
+		)
 
 		current_course = CourseFactory.create(semester=current_semester)
-		next_course = CourseFactory.create(semester=next_semester)
+		CourseFactory.create(semester=next_semester)
 
 		current_course.faculty.add(faculty)
 
 		disable_faculty()
 
 		faculty = User.objects.get(username=faculty.username)
-		self.assertEquals(faculty.is_active, False)
+		self.assertEqual(faculty.is_active, False)

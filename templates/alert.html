@@ -1,6 +1,13 @@
-<div class="alert {% if alert.level %}alert-{{ alert.level }}{% endif %}" data-alert="alert" data-id="{{ alert.id }}">
+<div class="alert alert-{{ alert.css_level }} d-flex align-items-start gap-2" role="alert">
+  <div class="flex-grow-1">
+    <strong>{{ alert.title }}</strong>
+    {% if alert.details %}<div class="small mt-1">{{ alert.details|safe }}</div>{% endif %}
+    <div class="small text-body-secondary mt-1">{{ alert.sent_by }}{% if alert.sent_by %} · {% endif %}{{ alert.created|timesince }} ago</div>
+  </div>
   {% if not alert.sticky %}
-    <a class="close" data-dismiss="alert" href="#">&times;</a>  
-  {% endif %}  
-  {{ alert.title }}
+  <form method="post" action="{% url 'alerts:acknowledge' alert.pk %}">
+    {% csrf_token %}<input type="hidden" name="next" value="{{ request.get_full_path }}">
+    <button type="submit" class="btn-close" aria-label="Dismiss"></button>
+  </form>
+  {% endif %}
 </div>

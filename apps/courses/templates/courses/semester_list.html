@@ -1,21 +1,14 @@
 {% extends "html_base.html" %}
-{% load breadcrumbs %}
-{% block breadcrumbs %}
-{% breadcrumb "Semesters" %}
-{% endblock breadcrumbs %}
-
-{% block title %}Semesters{% endblock title %}
-
-{% block aside %}
-{% endblock %}
-{% block content_attributes %}class="span12"{% endblock %}
-
+{% block title %}Semesters{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item active">Semesters</li>{% endblock %}
 {% block content %}
-
-<div id="semester-list">
-  <h1>Semesters</h1>
+<h1 class="h2 mb-3">Semesters</h1>
+<div class="list-group">
   {% for semester in semesters %}
-    <a href="{% url 'courses:by_semester' pk=semester.id %}">{{ semester }}</a><br>
-  {% endfor %}  
+  <a class="list-group-item list-group-item-action d-flex justify-content-between" href="{% url 'courses:by_semester' semester.pk %}">
+    <span>{{ semester }}</span>
+    <span class="text-body-secondary small">{{ semester.start|date:"M j, Y" }} – {{ semester.end|date:"M j, Y" }}{% if semester.active %} <span class="badge text-bg-success">Current</span>{% endif %}</span>
+  </a>
+  {% empty %}<div class="text-body-secondary">No semesters yet.</div>{% endfor %}
 </div>
-{% endblock content %}
+{% endblock %}

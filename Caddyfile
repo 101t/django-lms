@@ -1,0 +1,12 @@
+# SITE_ADDRESS is a domain (automatic HTTPS via Let's Encrypt) or ":80" for plain HTTP.
+{$SITE_ADDRESS::80} {
+	encode zstd gzip
+
+	# shortcut: uploads are served to anyone with the URL; add an auth check before hosting sensitive files
+	handle_path /media/* {
+		root * /srv/media
+		file_server
+	}
+
+	reverse_proxy web:8000
+}

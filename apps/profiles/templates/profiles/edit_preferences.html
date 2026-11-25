@@ -1,15 +1,9 @@
 {% extends "html_base.html" %}
-{% block extra_head %}
-<script type="text/javascript" src="{{ STATIC_URL }}tiny_mce/tiny_mce.js"></script>
-{% endblock extra_head %}
-
-{% block title %}Edit your preferences{% endblock title %}
+{% block title %}Preferences{% endblock %}
+{% block breadcrumbs %}<li class="breadcrumb-item active">Preferences</li>{% endblock %}
 {% block content %}
-<h1>Edit your profile</h1>
-<form action="{% url 'profiles:preference_edit' username=request.user.username %}" method="post" enctype="multipart/form-data">{% csrf_token %}
-<table>
-{{ form }}
-</table>
-<input type="submit" value="save">
-</form>
-{% endblock content %}
+<h1 class="h2 mb-3">Preferences</h1>
+<div class="card" style="max-width: 32rem"><div class="card-body">
+  <form method="post">{% csrf_token %}{% include "forms/bootstrap.html" %}<button class="btn btn-primary" type="submit">Save</button></form>
+</div></div>
+{% endblock %}

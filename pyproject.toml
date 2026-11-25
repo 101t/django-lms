@@ -1,0 +1,51 @@
+[project]
+name = "django-lms"
+version = "2.0.0"
+description = "A lightweight, self-hosted Learning Management System built with Django."
+readme = "README.md"
+requires-python = ">=3.12"
+keywords = ["lms", "learning-management-system", "django", "education", "e-learning", "self-hosted"]
+classifiers = [
+    "Framework :: Django",
+    "Framework :: Django :: 5.2",
+    "Programming Language :: Python :: 3.12",
+    "Programming Language :: Python :: 3.13",
+    "Topic :: Education",
+]
+dependencies = [
+    "Django>=5.2,<6.0",
+    "celery[redis]>=5.4",
+    "django-celery-beat>=2.7",
+    "dj-database-url>=2.3",
+    "django-recurrence>=1.12",
+    "django-tinymce>=4.1",
+    "djangorestframework>=3.15",
+    "drf-spectacular>=0.28",
+    "gunicorn>=23.0",
+    "Pillow>=11.0",
+    "psycopg[binary]>=3.2",
+    "python-dateutil>=2.9",
+    "python-dotenv>=1.0",
+    "whitenoise>=6.8",
+]
+
+[dependency-groups]
+dev = [
+    "factory-boy>=3.3",
+    "ruff>=0.8",
+]
+
+[tool.uv]
+package = false
+
+[tool.ruff]
+line-length = 120
+target-version = "py312"
+extend-exclude = ["*/migrations/*"]
+
+[tool.ruff.lint]
+select = ["E", "F", "W", "I", "UP", "B", "DJ"]
+ignore = ["E501", "W191", "DJ001", "DJ008", "DJ012"]
+
+[tool.ruff.format]
+indent-style = "tab"
