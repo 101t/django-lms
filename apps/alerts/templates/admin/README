@@ -1,1 +1,0 @@
-Until Django 1.4, I have to override the change_form.html to add a button to the submit_line. In 1.4, submit_line is in a block and we can inherit change_form.

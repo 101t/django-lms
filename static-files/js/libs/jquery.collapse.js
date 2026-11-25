@@ -1,1 +1,0 @@
-../../../libs/jQuery-Collapse/src/jquery.collapse.js
