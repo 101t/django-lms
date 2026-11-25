@@ -8,12 +8,15 @@
 [![Docker image](https://img.shields.io/badge/ghcr.io-101t%2Fdjango--lms-blue?logo=docker)](https://github.com/101t/django-lms/pkgs/container/django-lms)
 ![Python](https://img.shields.io/badge/python-3.12%20%7C%203.13-blue?logo=python)
 ![Django](https://img.shields.io/badge/django-5.2%20LTS-green?logo=django)
+[![License: MIT](https://img.shields.io/badge/license-MIT-yellow.svg)](LICENSE)
 
 </div>
 
 Most LMS platforms are heavy to run and hard to customise. Django LMS covers the everyday needs of a
 school, department or bootcamp — courses, schedules, assignments, resources and announcements — in a
 small, readable Django codebase that you can deploy on a $5 server.
+
+<p align="center"><img src="docs/screenshots/dashboard.png" alt="Dashboard with app tiles, my courses and upcoming deadlines" width="900"></p>
 
 ## Features
 
@@ -28,6 +31,20 @@ small, readable Django codebase that you can deploy on a $5 server.
 - **Automation** — scheduled jobs reset course visibility and deactivate idle faculty accounts at the end of each semester.
 - **Modern UI** — Bootstrap 5 with dark mode, responsive on phones.
 - **Production-ready** — PostgreSQL, Redis + Celery, Gunicorn, WhiteNoise and Caddy with automatic HTTPS, shipped as a multi-arch Docker image.
+
+## Screenshots
+
+| Course page | Assignment & submissions |
+| --- | --- |
+| ![Course overview with schedule and faculty](docs/screenshots/course.png) | ![Assignment page showing a student submission](docs/screenshots/assignment.png) |
+| **Personal calendar** | **Dark mode** |
+| ![Month calendar with recurring class meetings](docs/screenshots/calendar.png) | ![Course catalogue in dark mode](docs/screenshots/courses-dark.png) |
+| **REST API docs** | **Sign in** |
+| ![Swagger UI for the REST API](docs/screenshots/api-docs.png) | ![Sign-in page](docs/screenshots/login.png) |
+
+<details><summary>On mobile</summary>
+<p align="center"><img src="docs/screenshots/mobile.png" alt="Dashboard on a phone" width="320"></p>
+</details>
 
 ## Quick start
 
@@ -60,24 +77,17 @@ elsewhere the published image `ghcr.io/101t/django-lms` is used.
 
 ### Local development
 
-Requires [uv](https://docs.astral.sh/uv/). No database or Redis needed — SQLite is the default and background tasks run inline.
+Requires [uv](https://docs.astral.sh/uv/) and `make`. No database or Redis needed — SQLite is the default and background tasks run inline.
 
 ```bash
 git clone https://github.com/101t/django-lms.git && cd django-lms
-echo "DEBUG=true" > .env
-uv sync
-uv run python manage.py migrate
-uv run python manage.py seed_demo        # users: teacher / student1, password demo12345
-uv run python manage.py createsuperuser
-uv run python manage.py runserver
+make install     # dependencies, .env and database
+make demo        # optional: demo courses; users teacher / student1, password demo12345
+make superuser   # create your admin account
+make run         # http://127.0.0.1:8000
 ```
 
-Run the checks before opening a pull request:
-
-```bash
-uv run python manage.py test
-uv run ruff check . && uv run ruff format --check .
-```
+Run `make` to see every shortcut. Before opening a pull request, run `make check` (lint, tests and migration check).
 
 ## Configuration
 
@@ -123,3 +133,7 @@ curl -u teacher:demo12345 https://lms.example.edu/api/v1/courses/?mine=1
 ## Contributing
 
 Issues and pull requests are welcome — see [CONTRIBUTING.md](CONTRIBUTING.md).
+
+## License
+
+[MIT](LICENSE)
